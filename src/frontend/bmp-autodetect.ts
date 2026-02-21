@@ -104,11 +104,7 @@ export async function autoDetectBMPPort(): Promise<string | undefined> {
     }
 
     if (ports.length === 1) {
-        const port = ports[0];
-        vscode.window.showInformationMessage(
-            `Black Magic Probe auto-detected on ${port.path}`
-        );
-        return port.path;
+        return ports[0].path;
     }
 
     // Multiple probes found – let the user choose
@@ -124,4 +120,97 @@ export async function autoDetectBMPPort(): Promise<string | undefined> {
     });
 
     return picked?.label;
+}
+
+/**
+ * Detect the BMP UART/RTT serial port (Interface 1 / MI_01) given the GDB serial port path.
+ *
+ * Strategy:
+ *   1. Scan all BMP ports and find one with MI_01 / MI#01 that shares the same serialNumber.
+ *   2. Fallback: increment the numeric suffix of the GDB port path
+ *      (e.g. COM3 → COM4, /dev/ttyACM0 → /dev/ttyACM1).
+ *   3. Verify the candidate port actually exists before returning.
+ */
+export async function detectBMPUartPort(gdbPort: string): Promise<string | undefined> {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { SerialPort } = require('serialport');
+        const allPorts: any[] = await SerialPort.list();
+
+        console.log(`BMP RTT: Searching for UART port. GDB port = "${gdbPort}". `
+            + `System has ${allPorts.length} serial port(s).`);
+        for (const p of allPorts) {
+            console.log(`  port: ${p.path}  vid=${p.vendorId}  pid=${p.productId}`
+                + `  pnpId=${p.pnpId}  sn=${p.serialNumber}`);
+        }
+
+        // Find the GDB port entry — compare case-insensitively on Windows
+        const pathEq = (a: string, b: string) => {
+            if (process.platform === 'win32') {
+                return a.toLowerCase() === b.toLowerCase();
+            }
+            return a === b;
+        };
+        const gdbEntry = allPorts.find((p: any) => pathEq(p.path, gdbPort));
+        const gdbSerial = gdbEntry?.serialNumber;
+        console.log(`BMP RTT: GDB entry serialNumber = "${gdbSerial ?? '(not found)'}"`);
+
+        // Filter for BMP devices
+        const bmpPorts = allPorts.filter((p: any) => {
+            const vid = (p.vendorId || '').toLowerCase();
+            const pid = (p.productId || '').toLowerCase();
+            return vid === BMP_VID && pid === BMP_PID;
+        });
+        console.log(`BMP RTT: Found ${bmpPorts.length} BMP port(s).`);
+
+        // Strategy 1: Look for MI_01 port with same serialNumber
+        if (gdbSerial) {
+            const uartPort = bmpPorts.find((p: any) => {
+                const pnpId = (p.pnpId || '').toUpperCase();
+                return (pnpId.includes('MI_01') || pnpId.includes('MI#01'))
+                    && p.serialNumber === gdbSerial;
+            });
+            if (uartPort) {
+                console.log(`BMP RTT: Strategy 1 matched UART port: ${uartPort.path}`);
+                return uartPort.path as string;
+            }
+        }
+
+        // Strategy 2: Look for any MI_01 port from same BMP (by grouping)
+        const uartPorts = bmpPorts.filter((p: any) => {
+            const pnpId = (p.pnpId || '').toUpperCase();
+            return pnpId.includes('MI_01') || pnpId.includes('MI#01');
+        });
+        if (uartPorts.length === 1) {
+            console.log(`BMP RTT: Strategy 2 matched single UART port: ${uartPorts[0].path}`);
+            return uartPorts[0].path as string;
+        }
+
+        // Strategy 3: Fallback — pick the "other" BMP port that isn't the GDB port
+        const otherBmpPorts = bmpPorts.filter((p: any) => !pathEq(p.path, gdbPort));
+        if (otherBmpPorts.length === 1) {
+            console.log(`BMP RTT: Strategy 3a matched other BMP port: ${otherBmpPorts[0].path}`);
+            return otherBmpPorts[0].path as string;
+        }
+
+        // Strategy 4: Fallback – increment numeric suffix of the GDB port path
+        const match = gdbPort.match(/^(.*?)(\d+)$/);
+        if (match) {
+            const prefix = match[1];
+            const num = parseInt(match[2], 10);
+            const candidate = `${prefix}${num + 1}`;
+            // Verify the candidate exists in the system port list
+            const exists = allPorts.find((p: any) => pathEq(p.path, candidate));
+            if (exists) {
+                console.log(`BMP RTT: Strategy 4 (path increment) matched: ${candidate}`);
+                return candidate;
+            }
+        }
+
+        console.log('BMP RTT: No UART port found by any strategy.');
+        return undefined;
+    } catch (e) {
+        console.error('BMP UART port detection failed:', e);
+        return undefined;
+    }
 }

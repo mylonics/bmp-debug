@@ -4,12 +4,14 @@ import { ConfigurationArguments, ChainedConfig } from '../common';
 import { RTTCore, SWOCore } from './swo/core';
 import { SWORTTSource } from './swo/sources/common';
 import { SocketRTTSource } from './swo/sources/socket';
+import { BMPRttSerialTerminal } from './bmp-rtt-serial';
 
 export class CDebugSession {
     public swo: SWOCore = null;
     public rtt: RTTCore = null;
     public swoSource: SWORTTSource = null;
     public rttPortMap: { [channel: number]: SocketRTTSource } = {};
+    public bmpRttSerial: BMPRttSerialTerminal = null;
     // Status can be 'none' before the session actually starts but this object
     // may have been created before that actually happens due to SWO, RTT, chained
     // launches, etc

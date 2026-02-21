@@ -7,6 +7,8 @@ This extension is a fork of [Cortex-Debug](https://github.com/Marus/cortex-debug
 ## Features
 
 - Black Magic Probe GDB server integration
+- **USB auto-detection** — automatically finds the BMP by VID/PID (`1d50:6018`), no manual port configuration needed
+- **RTT over BMP serial** — opens the BMP's second serial port (UART/RTT) in a dedicated terminal panel when `rttEnabled` is set
 - Zephyr RTOS thread awareness in the Call Stack view
 - SWO decoding (console, binary, graphing)
 - SEGGER RTT support
@@ -45,9 +47,50 @@ Add the following to your `.vscode/launch.json`:
 }
 ```
 
-The extension **automatically detects** a connected Black Magic Probe by its USB VID/PID (`1d50:6018`).
+### USB Auto-Detection
+
+The extension **automatically detects** a connected Black Magic Probe by scanning USB devices for VID `1d50` and PID `6018`. The BMP exposes two serial ports:
+
+| Interface | Purpose |
+|---|---|
+| Interface 0 (`MI_00`) | GDB Server |
+| Interface 1 (`MI_01`) | UART Console / RTT |
+
+The GDB port (Interface 0) is identified by its USB interface descriptor (`MI_00`). If the descriptor is unavailable, the extension falls back to choosing the lower-numbered port path (e.g. `COM3` before `COM4`, or `/dev/ttyACM0` before `/dev/ttyACM1`).
+
 If multiple probes are connected you will be prompted to choose one.
 You can still override the port manually by adding `"port": "/dev/ttyACM0"` (Linux/macOS) or `"port": "COM3"` (Windows) to your configuration.
+
+### RTT over BMP Serial
+
+When `"rttEnabled": true` is set in your launch configuration, the extension automatically:
+
+1. Sends `monitor rtt enable` to the BMP before launch/attach
+2. Detects the BMP's second serial port (UART/RTT interface, `MI_01`)
+3. Opens that port at **115200 baud** in a new VS Code terminal panel titled **"BMP RTT: \<port\>"**
+
+The UART port is detected using these strategies (in order):
+- **USB interface descriptor** — looks for `MI_01` with the same serial number as the GDB port
+- **Single UART port** — if only one BMP UART port is found, uses it directly
+- **Path increment** — increments the numeric suffix of the GDB port (e.g. `COM3` → `COM4`, `/dev/ttyACM0` → `/dev/ttyACM1`) and verifies it exists
+
+The RTT terminal is bidirectional — you can both view output and send input. It is automatically closed when the debug session ends.
+
+#### Example configuration with RTT
+
+```json
+{
+    "name": "Debug with RTT",
+    "cwd": "${workspaceFolder}",
+    "executable": "./build/zephyr/zephyr.elf",
+    "request": "launch",
+    "type": "bmp-debug",
+    "interface": "swd",
+    "runToEntryPoint": "main",
+    "rtos": "zephyr",
+    "rttEnabled": true
+}
+```
 
 ### Key launch.json Properties
 
@@ -60,7 +103,7 @@ You can still override the port manually by adding `"port": "/dev/ttyACM0"` (Lin
 | `targetId` | Target ID for BMP scan (default: `1`) |
 | `powerOverBMP` | Power target via BMP: `"enable"`, `"disable"`, or `"lastState"` (default) |
 | `rtos` | RTOS type for thread awareness. Currently only `"zephyr"` is supported |
-| `rttEnabled` | Enable RTT support over BMP (adds `monitor rtt enable`) |
+| `rttEnabled` | Enable RTT over BMP serial. Opens the UART port in a terminal panel and sends `monitor rtt enable` |
 | `runToEntryPoint` | Function name to run to on launch (e.g., `"main"`) |
 
 For a full list of properties, see [debug_attributes.md](debug_attributes.md).

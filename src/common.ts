@@ -356,6 +356,7 @@ export interface ConfigurationArguments extends DebugProtocol.LaunchRequestArgum
     port: string;
     BMPGDBSerialPort: string;   // Deprecated: use 'port' instead
     powerOverBMP: string;
+    rttEnabled: boolean;
 
     // QEMU Specific
     cpu: string;

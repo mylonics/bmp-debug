@@ -23,6 +23,8 @@ import { RTTTerminal } from './rtt_terminal';
 import { GDBServerConsole } from './server_console';
 import { CDebugSession, CDebugChainedSessionItem } from './cortex_debug_session';
 import { ServerConsoleLog } from '../backend/server';
+import { BMPRttSerialTerminal } from './bmp-rtt-serial';
+import { detectBMPUartPort } from './bmp-autodetect';
 
 interface SVDInfo {
     expression: RegExp;
@@ -417,6 +419,11 @@ export class CortexDebugExtension {
                 this.initializeRTT(session, args);
             }
             this.cleanupRTTTerminals();
+
+            // BMP RTT over serial: open the UART port when rttEnabled is set
+            if (args.servertype === 'bmp' && args.rttEnabled) {
+                this.startBMPRttSerial(newSession, args);
+            }
         }, (error) => {
             vscode.window.showErrorMessage(
                 `Internal Error: Could not get startup arguments. Many debug functions can fail. Please report this problem. Error: ${error}`);
@@ -444,6 +451,10 @@ export class CortexDebugExtension {
                     mySession.rttPortMap[ch].dispose();
                 }
                 mySession.rttPortMap = {};
+            }
+            if (mySession?.bmpRttSerial) {
+                mySession.bmpRttSerial.closeSerial();
+                mySession.bmpRttSerial = null;
             }
         } catch (e) {
             vscode.window.showInformationMessage(`Debug session did not terminate cleanly ${e}\n${e ? e.stackstrace : ''}. Please report this problem`);
@@ -857,6 +868,49 @@ export class CortexDebugExtension {
         const mySession = CDebugSession.FindSession(session);
         if (!mySession.rtt) {
             mySession.rtt = new RTTCore(mySession.rttPortMap, args, this.context.extensionPath);
+        }
+    }
+
+    /**
+     * When `rttEnabled` is set for a BMP session, detect the second serial port
+     * (UART / RTT) and open it in a new terminal panel.
+     */
+    private async startBMPRttSerial(session: CDebugSession, args: ConfigurationArguments): Promise<void> {
+        const gdbPort = args.port || args.BMPGDBSerialPort;
+        if (!gdbPort) {
+            CortexDebugChannel.debugMessage(
+                'BMP RTT: Cannot open UART – no GDB port known (args.port and args.BMPGDBSerialPort are both empty)');
+            return;
+        }
+
+        CortexDebugChannel.debugMessage(
+            `BMP RTT: rttEnabled is true, detecting UART port for GDB port "${gdbPort}"...`);
+
+        try {
+            const uartPort = await detectBMPUartPort(gdbPort);
+            if (!uartPort) {
+                const msg = `BMP RTT: Could not detect the UART serial port for GDB port ${gdbPort}. `
+                    + 'Connect the probe and verify both serial ports are visible to the OS.';
+                CortexDebugChannel.debugMessage(msg);
+                vscode.window.showWarningMessage(msg);
+                return;
+            }
+
+            CortexDebugChannel.debugMessage(
+                `BMP RTT: Opening UART serial port ${uartPort} (GDB on ${gdbPort})`);
+            if (vscode.debug.activeDebugConsole) {
+                vscode.debug.activeDebugConsole.appendLine(
+                    `BMP RTT: Opening UART serial port ${uartPort} (GDB on ${gdbPort})`
+                );
+            }
+
+            const baudRate = 115200;
+            const rttSerial = new BMPRttSerialTerminal(uartPort, baudRate);
+            session.bmpRttSerial = rttSerial;
+            rttSerial.show();
+        } catch (e: any) {
+            CortexDebugChannel.debugMessage(`BMP RTT serial error: ${e.message}`);
+            vscode.window.showErrorMessage(`BMP RTT serial error: ${e.message}`);
         }
     }
 
