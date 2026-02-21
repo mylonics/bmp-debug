@@ -310,7 +310,6 @@ export interface ConfigurationArguments extends DebugProtocol.LaunchRequestArgum
     cwd: string;
     extensionPath: string;
     rtos: string;
-    overrideMICommands: boolean;
     interface: 'jtag' | 'swd' | 'cjtag';
     targetId: string | number;
     runToMain: boolean;         // Deprecated: kept here for backwards compatibility

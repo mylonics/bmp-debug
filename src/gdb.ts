@@ -1050,7 +1050,7 @@ export class GDBDebugSession extends LoggingDebugSession {
 
         this.miDebugger = new MI2(gdbExePath, gdbargs);
         this.miDebugger.debugOutput = this.args.showDevDebugOutput;
-        this.miDebugger.overrideMICommands = !!this.args.overrideMICommands;
+        this.miDebugger.overrideMICommands = !!this.args.rtos;
         if (this.args.gdbInterruptMode) {
             this.miDebugger.interruptMode = this.args.gdbInterruptMode;
         }
@@ -1124,7 +1124,7 @@ export class GDBDebugSession extends LoggingDebugSession {
         liveGdb.setupEvents(mi2);
         const commands = [...this.gdbInitCommands];
         mi2.debugOutput = this.args.showDevDebugOutput;
-        mi2.overrideMICommands = !!this.args.overrideMICommands;
+        mi2.overrideMICommands = !!this.args.rtos;
         if (this.args.gdbInterruptMode) {
             mi2.interruptMode = this.args.gdbInterruptMode;
         }

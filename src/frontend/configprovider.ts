@@ -449,10 +449,6 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
             return `Invalid RTOS value "${config.rtos}". Supported values: ${VALID_RTOS.join(', ')}`;
         }
 
-        if (config.rtos === 'zephyr') {
-            config.overrideMICommands = true;
-        }
-
         return null;
     }
 
@@ -464,10 +460,6 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
 
         if (config.rtos && VALID_RTOS.indexOf(config.rtos) === -1) {
             return `Invalid RTOS value "${config.rtos}". Supported values: ${VALID_RTOS.join(', ')}`;
-        }
-
-        if (config.rtos === 'zephyr') {
-            config.overrideMICommands = true;
         }
 
         return null;
@@ -492,10 +484,6 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
 
         if (config.rtos && VALID_RTOS.indexOf(config.rtos) === -1) {
             return `Invalid RTOS value "${config.rtos}". Supported values: ${VALID_RTOS.join(', ')}`;
-        }
-
-        if (config.rtos === 'zephyr') {
-            config.overrideMICommands = true;
         }
 
         return null;

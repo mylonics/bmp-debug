@@ -435,11 +435,6 @@
                                     "zephyr"
                                 ]
                             },
-                            "overrideMICommands": {
-                                "default": false,
-                                "description": "When true, rewrites standard MI thread commands (-thread-info, -thread-list-ids, -thread-select, -stack-list-frames) and the --thread option to their -override- equivalents. Use with a GDB Python extension (e.g. zephyr_gdb.py) that implements the override commands for RTOS thread awareness.",
-                                "type": "boolean"
-                            },
                             "armToolchainPath": {
                                 "default": null,
                                 "description": "This setting can be used to override the armToolchainPath user setting for a particular launch configuration. This should be the path where arm-none-eabi-gdb, arm-none-eabi-objdump and arm-none-eabi-nm are located.",
@@ -1540,11 +1535,6 @@
                                 "enum": [
                                     "zephyr"
                                 ]
-                            },
-                            "overrideMICommands": {
-                                "default": false,
-                                "description": "When true, rewrites standard MI thread commands (-thread-info, -thread-list-ids, -thread-select, -stack-list-frames) and the --thread option to their -override- equivalents. Use with a GDB Python extension (e.g. zephyr_gdb.py) that implements the override commands for RTOS thread awareness.",
-                                "type": "boolean"
                             },
                             "armToolchainPath": {
                                 "default": null,
