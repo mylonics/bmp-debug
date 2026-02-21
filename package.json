@@ -306,6 +306,7 @@
                             "servertype": {
                                 "type": "string",
                                 "description": "GDB Server type - supported types are bmp, qemu, and external.",
+                                "default": "bmp",
                                 "enum": [
                                     "bmp",
                                     "qemu",
@@ -1385,9 +1386,14 @@
                                     }
                                 ]
                             },
-                            "BMPGDBSerialPort": {
+                            "port": {
                                 "type": "string",
                                 "description": "The serial port for the Black Magic Probe GDB Server. On Windows this will be \"COM<num>\", on Linux this will be something similar to /dev/ttyACM0, on OS X something like /dev/cu.usbmodemE2C0C4C6 (do not use tty versions on OS X)"
+                            },
+                            "BMPGDBSerialPort": {
+                                "type": "string",
+                                "description": "Deprecated: use 'port' instead. The serial port for the Black Magic Probe GDB Server.",
+                                "deprecationMessage": "Use 'port' instead of 'BMPGDBSerialPort'."
                             },
                             "rttEnabled": {
                                 "type": "boolean",
@@ -1408,6 +1414,7 @@
                             "servertype": {
                                 "type": "string",
                                 "description": "GDB Server type - supported types are bmp, qemu, and external.",
+                                "default": "bmp",
                                 "enum": [
                                     "bmp",
                                     "qemu",
@@ -2503,9 +2510,14 @@
                                     }
                                 ]
                             },
-                            "BMPGDBSerialPort": {
+                            "port": {
                                 "type": "string",
                                 "description": "The serial port for the Black Magic Probe GDB Server. On Windows this will be \"COM<num>\", on Linux this will be something similar to /dev/ttyACM0, on OS X something like /dev/cu.usbmodemE2C0C4C6 (do not use tty versions on OS X)"
+                            },
+                            "BMPGDBSerialPort": {
+                                "type": "string",
+                                "description": "Deprecated: use 'port' instead. The serial port for the Black Magic Probe GDB Server.",
+                                "deprecationMessage": "Use 'port' instead of 'BMPGDBSerialPort'."
                             },
                             "rttEnabled": {
                                 "type": "boolean",
@@ -2531,10 +2543,8 @@
                             "request": "launch",
                             "type": "bmp-debug",
                             "runToEntryPoint": "main",
-                            "showDevDebugOutput": "none",
-                            "servertype": "bmp",
-                            "BMPGDBSerialPort": "${2:/dev/ttyACM0}",
-                            "interface": "swd"
+                            "interface": "swd",
+                            "rtos": "zephyr"
                         },
                         "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + Black Magic Probe",
                         "label": "BMP Debug: Black Magic Probe"
@@ -2547,7 +2557,6 @@
                             "request": "launch",
                             "type": "bmp-debug",
                             "runToEntryPoint": "main",
-                            "showDevDebugOutput": "none",
                             "servertype": "qemu",
                             "cpu": "cortex-m3",
                             "machine": "lm3s6965evb"
@@ -2563,7 +2572,6 @@
                             "request": "launch",
                             "type": "bmp-debug",
                             "runToEntryPoint": "main",
-                            "showDevDebugOutput": "none",
                             "servertype": "external",
                             "gdbTarget": "${2:localhost:3333}"
                         },

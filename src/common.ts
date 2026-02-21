@@ -353,7 +353,8 @@ export interface ConfigurationArguments extends DebugProtocol.LaunchRequestArgum
     stm32cubeprogrammer: string;
 
     // BMP Specific
-    BMPGDBSerialPort: string;
+    port: string;
+    BMPGDBSerialPort: string;   // Deprecated: use 'port' instead
     powerOverBMP: string;
 
     // QEMU Specific

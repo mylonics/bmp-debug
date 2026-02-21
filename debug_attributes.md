@@ -7,7 +7,7 @@ The following attributes (properties) can be used in your `launch.json` to contr
 If the type is marked as `{...}` it means that it is a complex item can have multiple types. Possibly consult our Wiki
 | Attribute | Type | Launch/ Attach | Description |
 | --------- | ---- | ---------------- | ----------- |
-| BMPGDBSerialPort | string | Both | The serial port for the Black Magic Probe GDB Server. On Windows this will be "COM<num>", on Linux this will be something similar to /dev/ttyACM0, on OS X something like /dev/cu.usbmodemE2C0C4C6 (do not use tty versions on OS X) |
+| BMPGDBSerialPort | string | Both | Deprecated: use 'port' instead. The serial port for the Black Magic Probe GDB Server. |
 | armToolchainPath | string | Both | This setting can be used to override the armToolchainPath user setting for a particular launch configuration. This should be the path where arm-none-eabi-gdb, arm-none-eabi-objdump and arm-none-eabi-nm are located. |
 | breakAfterReset | boolean | Both | Applies to Restart/Reset/Launch, halt debugger after a reset. Ignored if `runToEntryPoint` is used. |
 | chainedConfigurations | object | Both | An object describing how additional configurations should be launched |
@@ -47,6 +47,7 @@ If the type is marked as `{...}` it means that it is a complex item can have mul
 | overrideLaunchCommands | string[] | Launch | Override the commands that are normally executed as part of flashing and launching the target. In most cases it is preferable to use preLaunchCommands and postLaunchCommands to customize the GDB launch sequence. |
 | overridePreEndSessionCommands | string[] | Both | Override the commands that are normally executed at the start of ending a debug session (e.g. when stopping debugging). |
 | overrideResetCommands | string[] | Both | Override the commands that are normally executed as part of reset-ing the target. When undefined the deprecated overrideRestartCommands is used if it exists. |
+| port | string | Both | The serial port for the Black Magic Probe GDB Server. On Windows this will be "COM<num>", on Linux this will be something similar to /dev/ttyACM0, on OS X something like /dev/cu.usbmodemE2C0C4C6 (do not use tty versions on OS X) |
 | postAttachCommands | string[] | Attach | Additional GDB Commands to be executed after the main attach sequence has finished. |
 | postLaunchCommands | string[] | Launch | Additional GDB Commands to be executed after the main launch sequence has finished. |
 | postResetCommands | string[] | Both | Additional GDB Commands to be executed at the end of the reset sequence. When undefined the deprecated postRestartCommands is used. |

@@ -10,14 +10,17 @@ This extension is a fork of [Cortex-Debug](https://github.com/Marus/cortex-debug
 - Zephyr RTOS thread awareness in the Call Stack view
 - SWO decoding (console, binary, graphing)
 - SEGGER RTT support
-- Live Watch for global/static variables
 - Memory viewing via [mcu-debug extensions](https://marketplace.visualstudio.com/search?term=mcu-debug&target=VSCode&category=All%20categories&sortBy=Relevance)
 - Disassembly debugging (provided by VS Code)
-- Also supports QEMU and external GDB server types
+
+> **Currently only Black Magic Probe and Zephyr RTOS thread awareness are supported.**
+> QEMU and external GDB server types are available but without thread awareness.
+> If you would like to add support for another GDB server without thread awareness, please open a PR.
+> If you would like to support another RTOS besides Zephyr, please open an issue or PR.
 
 ## Requirements
 
-- ARM GCC Toolchain ([download](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)) — provides `arm-none-eabi-gdb` and related tools
+- **`arm-none-eabi-gdb` 12.1 or greater with Python support** — the version of Python that `arm-none-eabi-gdb` was compiled against must also be installed on your system (the Zephyr SDK includes a compatible toolchain by default)
 - A Black Magic Probe (or compatible device)
 
 ## Quick Start
@@ -34,8 +37,6 @@ Add the following to your `.vscode/launch.json`:
             "executable": "./build/zephyr/zephyr.elf",
             "request": "launch",
             "type": "bmp-debug",
-            "servertype": "bmp",
-            "BMPGDBSerialPort": "/dev/ttyACM0",
             "interface": "swd",
             "runToEntryPoint": "main",
             "rtos": "zephyr"
@@ -44,13 +45,17 @@ Add the following to your `.vscode/launch.json`:
 }
 ```
 
-On Windows, set `"BMPGDBSerialPort"` to the appropriate COM port (e.g., `"COM3"`).
+The extension **automatically detects** a connected Black Magic Probe by its USB VID/PID (`1d50:6018`).
+If multiple probes are connected you will be prompted to choose one.
+You can still override the port manually by adding `"port": "/dev/ttyACM0"` (Linux/macOS) or `"port": "COM3"` (Windows) to your configuration.
 
 ### Key launch.json Properties
 
 | Property | Description |
 |---|---|
-| `BMPGDBSerialPort` | Serial port for BMP GDB server (required) |
+| `servertype` | GDB server type: `"bmp"` (default), `"qemu"`, or `"external"` |
+| `port` | Serial port for BMP GDB server. Auto-detected if omitted |
+| `BMPGDBSerialPort` | **Deprecated** — use `port` instead |
 | `interface` | Debug interface: `"swd"` (default) or `"jtag"` |
 | `targetId` | Target ID for BMP scan (default: `1`) |
 | `powerOverBMP` | Power target via BMP: `"enable"`, `"disable"`, or `"lastState"` (default) |

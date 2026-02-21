@@ -7,6 +7,7 @@ import {
     sanitizeDevDebug, validateELFHeader, SymbolFile, defSymbolFile
 } from '../common';
 import { CDebugChainedSessionItem, CDebugSession } from './cortex_debug_session';
+import { autoDetectBMPPort } from './bmp-autodetect';
 import * as path from 'path';
 
 const VALID_RTOS: string[] = ['zephyr'];
@@ -26,11 +27,11 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         }];
     }
 
-    public resolveDebugConfiguration(
+    public async resolveDebugConfiguration(
         folder: vscode.WorkspaceFolder | undefined,
         config: vscode.DebugConfiguration,
         token?: vscode.CancellationToken
-    ): vscode.ProviderResult<vscode.DebugConfiguration> {
+    ): Promise<vscode.DebugConfiguration | undefined> {
         if (GDBServerConsole.BackendPort <= 0) {
             vscode.window.showErrorMessage('GDB server console not yet ready. Please try again. Report this problem');
             return undefined;
@@ -64,6 +65,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         }
         if (!config.debuggerArgs) { config.debuggerArgs = []; }
 
+        if (!config.servertype) { config.servertype = 'bmp'; }
         const type = config.servertype;
 
         let validationResponse: string = null;
@@ -122,7 +124,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
 
         switch (type) {
             case 'bmp':
-                validationResponse = this.verifyBMPConfiguration(folder, config);
+                validationResponse = await this.verifyBMPConfiguration(folder, config);
                 break;
             case 'external':
                 validationResponse = this.verifyExternalConfiguration(folder, config);
@@ -450,8 +452,17 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         return null;
     }
 
-    private verifyBMPConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        if (!config.BMPGDBSerialPort) { return 'A Serial Port for the Black Magic Probe GDB server is required.'; }
+    private async verifyBMPConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): Promise<string> {
+        if (config.BMPGDBSerialPort && !config.port) { config.port = config.BMPGDBSerialPort; }
+        if (!config.port) {
+            // Attempt auto-detection of Black Magic Probe
+            const detectedPort = await autoDetectBMPPort();
+            if (detectedPort) {
+                config.port = detectedPort;
+            } else {
+                return 'No Black Magic Probe detected. Either connect a probe or set the "port" property in launch.json.';
+            }
+        }
         if (!config.powerOverBMP) { config.powerOverBMP = 'lastState'; }
         if (!config.interface) { config.interface = 'swd'; }
         if (!config.targetId) { config.targetId = 1; }

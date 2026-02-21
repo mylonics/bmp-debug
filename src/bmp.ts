@@ -28,7 +28,7 @@ export class BMPServerController extends EventEmitter implements GDBServerContro
 
     public initCommands(): string[] {
         const commands: string[] = [
-            `target-select extended-remote ${this.args.BMPGDBSerialPort}`
+            `target-select extended-remote ${this.args.port || this.args.BMPGDBSerialPort}`
         ];
 
         if (this.args.powerOverBMP === 'enable') {
