@@ -458,6 +458,11 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         if (!config.interface) { config.interface = 'swd'; }
         if (!config.targetId) { config.targetId = 1; }
 
+        if (config.rttEnabled) {
+            config.preLaunchCommands.unshift('monitor rtt enable');
+            config.preAttachCommands.unshift('monitor rtt enable');
+        }
+
         if (config.rtos && VALID_RTOS.indexOf(config.rtos) === -1) {
             return `Invalid RTOS value "${config.rtos}". Supported values: ${VALID_RTOS.join(', ')}`;
         }

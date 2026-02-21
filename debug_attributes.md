@@ -66,6 +66,7 @@ If the type is marked as `{...}` it means that it is a complex item can have mul
 | rttConfig<br>.rtt_start_retry | number | Both | Keep trying to start RTT for OpenOCD until it succeeds with given internal in milliseconds. <= 0 means do not retry. Only for OpenOCD |
 | rttConfig<br>.searchId | string | Both | A string to search for to find the RTT control block. If 'address' is 'auto', use ONLY if you have a custom RTT implementation |
 | rttConfig<br>.searchSize | number | Both | Number of bytes to search for the RTT control block. If 'address' is 'auto', use ONLY if you have a custom RTT implementation |
+| rttEnabled | boolean | Both | Enable RTT (Real-Time Transfer) on the Black Magic Probe. When true, 'monitor rtt enable' is automatically sent before attach/launch. |
 | runToEntryPoint | string | Both | Applies to Launch/Restart/Reset, ignored for Attach. If enabled the debugger will run until the start of the given function. |
 | serverArgs | string[] | Both | Additional arguments to pass to GDB Server command line |
 | serverpath | string | Both | This setting can be used to override the GDB Server path user/workspace setting for a particular launch configuration. It is the full pathname to the executable or name of executable if it is in your PATH |
