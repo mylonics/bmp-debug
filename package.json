@@ -1,5 +1,5 @@
 {
-    "version": "1.13.0-pre9",
+    "version": "0.0.1",
     "preview": false,
     "activationEvents": [
         "onDebugResolve:cortex-debug",
@@ -157,236 +157,6 @@
             },
             {
                 "type": "object",
-                "title": "External: GDB Servers",
-                "properties": {
-                    "cortex-debug.JLinkGDBServerPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the JLink GDB Server. If not set then JLinkGDBServer (JLinkGDBServerCL.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.JLinkGDBServerPath.linux": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the JLink GDB Server. If not set then JLinkGDBServer (JLinkGDBServerCLExe) must be on the system path."
-                    },
-                    "cortex-debug.JLinkGDBServerPath.osx": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the JLink GDB Server. If not set then JLinkGDBServer (JLinkGDBServerCLExe) must be on the system path."
-                    },
-                    "cortex-debug.JLinkGDBServerPath.windows": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the JLink GDB Server. If not set then JLinkGDBServer (JLinkGDBServerCL.exe) must be on the system path."
-                    },
-                    "cortex-debug.openocdPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the OpenOCD GDB Server executable. If not set then openocd (openocd.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.openocdPath.linux": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the OpenOCD GDB Server executable. If not set then openocd (openocd.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.openocdPath.osx": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the OpenOCD GDB Server executable. If not set then openocd (openocd.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.openocdPath.windows": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the OpenOCD GDB Server executable. If not set then openocd (openocd.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.pyocdPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PyOCD GDB Server executable. If not set then pyocd-gdbserver must be on the system path."
-                    },
-                    "cortex-debug.pyocdPath.linux": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PyOCD GDB Server executable. If not set then pyocd-gdbserver must be on the system path."
-                    },
-                    "cortex-debug.pyocdPath.osx": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PyOCD GDB Server executable. If not set then pyocd-gdbserver must be on the system path."
-                    },
-                    "cortex-debug.pyocdPath.windows": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PyOCD GDB Server executable. If not set then pyocd-gdbserver must be on the system path."
-                    },
-                    "cortex-debug.PEGDBServerPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PEMicro GDB Server. If not set then PEGDBServer (pegdbserver_console.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.PEGDBServerPath.linux": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PEMicro GDB Server. If not set then PEGDBServer (pegdbserver_console.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.PEGDBServerPath.osx": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PEMicro GDB Server. If not set then PEGDBServer (pegdbserver_console.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.PEGDBServerPath.windows": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the PEMicro GDB Server. If not set then PEGDBServer (pegdbserver_console.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stutilPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the Texane's ST-Util GDB Server executable. If not set then st-util (st-util.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stutilPath.linux": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the Texane's ST-Util GDB Server executable. If not set then st-util (st-util.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stutilPath.osx": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the Texane's ST-Util GDB Server executable. If not set then st-util (st-util.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stutilPath.windows": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the Texane's ST-Util GDB Server executable. If not set then st-util (st-util.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stlinkPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the ST-LINK_gdbserver executable. If not set then ST-LINK_gdbserver (ST-LINK_gdbserver.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stlinkPath.linux": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the ST-LINK_gdbserver executable. If not set then ST-LINK_gdbserver (ST-LINK_gdbserver.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stlinkPath.osx": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the ST-LINK_gdbserver executable. If not set then ST-LINK_gdbserver (ST-LINK_gdbserver.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stlinkPath.windows": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "Path to the ST-LINK_gdbserver executable. If not set then ST-LINK_gdbserver (ST-LINK_gdbserver.exe on Windows) must be on the system path."
-                    },
-                    "cortex-debug.stm32cubeprogrammer": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "This path is normally resolved to the installed STM32CubeIDE or STM32CubeProgrammer but can be overridden here."
-                    },
-                    "cortex-debug.stm32cubeprogrammer.linux": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "This path is normally resolved to the installed STM32CubeIDE or STM32CubeProgrammer but can be overridden here."
-                    },
-                    "cortex-debug.stm32cubeprogrammer.osx": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "This path is normally resolved to the installed STM32CubeIDE or STM32CubeProgrammer but can be overridden here."
-                    },
-                    "cortex-debug.stm32cubeprogrammer.windows": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "description": "This path is normally resolved to the installed STM32CubeIDE or STM32CubeProgrammer but can be overridden here."
-                    }
-                }
-            },
-            {
-                "type": "object",
                 "title": "Miscellaneous",
                 "properties": {
                     "cortex-debug.enableTelemetry": {
@@ -535,15 +305,9 @@
                         "properties": {
                             "servertype": {
                                 "type": "string",
-                                "description": "GDB Server type - supported types are jlink, openocd, pyocd, pe, stlink, stutil, qemu, bmp and external. For \"external\", [please read our Wiki](https://github.com/Marus/cortex-debug/wiki/External-gdb-server-configuration). The executable in your PATH is used by default, to override this use serverpath.",
+                                "description": "GDB Server type - supported types are bmp, qemu, and external.",
                                 "enum": [
-                                    "jlink",
-                                    "openocd",
-                                    "pyocd",
-                                    "stutil",
-                                    "stlink",
                                     "bmp",
-                                    "pe",
                                     "qemu",
                                     "external"
                                 ]
@@ -665,8 +429,11 @@
                             },
                             "rtos": {
                                 "default": null,
-                                "description": "RTOS being used. For JLink this can be Azure, ChibiOS, embOS, FreeRTOS, NuttX, Zephyr or the path to a custom JLink RTOS Plugin library. For OpenOCD this can be auto (recommended), FreeRTOS, ThreadX, chibios, Chromium-EC, eCos, embKernel, linux, mqx, nuttx, RIOT, uCOS-III, or Zephyr.",
-                                "type": "string"
+                                "description": "RTOS being used. Currently only \"zephyr\" is supported. When set to \"zephyr\", the extension will automatically source zephyr_gdb.py and enable MI command overrides for RTOS thread awareness.",
+                                "type": "string",
+                                "enum": [
+                                    "zephyr"
+                                ]
                             },
                             "overrideMICommands": {
                                 "default": false,
@@ -1597,20 +1364,9 @@
                                 "required": [],
                                 "type": "object"
                             },
-                            "ipAddress": {
-                                "default": null,
-                                "description": "IP Address for networked J-Link Adapter",
-                                "pattern": "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$",
-                                "type": "string"
-                            },
-                            "serialNumber": {
-                                "default": null,
-                                "description": "J-Link or ST-LINK Serial Number - only needed if multiple J-Links/ST-LINKs are connected to the computer",
-                                "type": "string"
-                            },
                             "interface": {
                                 "default": "swd",
-                                "description": "Debug Interface type to use for connections (defaults to SWD) - Used for J-Link, ST-LINK and BMP probes.",
+                                "description": "Debug Interface type to use for connections (defaults to SWD) - Used for BMP probes.",
                                 "type": "string",
                                 "enum": [
                                     "swd",
@@ -1618,59 +1374,8 @@
                                     "cjtag"
                                 ]
                             },
-                            "jlinkscript": {
-                                "default": null,
-                                "description": "J-Link script file - optional input file for customizing J-Link actions.",
-                                "type": "string"
-                            },
-                            "openOCDLaunchCommands": {
-                                "default": [],
-                                "description": "OpenOCD command(s) after configuration files are loaded (-c options)",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "openOCDPreConfigLaunchCommands": {
-                                "default": [],
-                                "description": "OpenOCD command(s) before configuration files are loaded (-c options)",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "configFiles": {
-                                "description": "OpenOCD/PE GDB Server configuration file(s) to use when debugging (OpenOCD -f option)",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "searchDir": {
-                                "default": [],
-                                "description": "OpenOCD directories to search for config files and scripts (-s option). If no search directories are specified, it defaults to the configured cwd.",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "v1": {
-                                "default": false,
-                                "description": "For st-util only. Set this to true if your debug probe is a ST-Link V1 (for example, the ST-Link on the STM32 VL Discovery is a V1 device). When set to false a ST-Link V2 device is used.",
-                                "type": "boolean"
-                            },
-                            "stlinkPath": {
-                                "default": null,
-                                "description": "Path to the ST-LINK_gdbserver executable. If not set then ST-LINK_gdbserver (ST-LINK_gdbserver.exe on Windows) must be on the system path.",
-                                "type": "string"
-                            },
-                            "stm32cubeprogrammer": {
-                                "default": null,
-                                "description": "This path is normally resolved to the installed STM32CubeIDE or STM32CubeProgrammer but can be overridden here.",
-                                "type": "string"
-                            },
                             "targetId": {
-                                "description": "On BMP this is the ID number that should be passed to the attach command (defaults to 1); for PyOCD this is the target identifier (only needed for custom hardware)",
+                                "description": "On BMP this is the ID number that should be passed to the attach command (defaults to 1).",
                                 "type": [
                                     "string",
                                     "number"
@@ -1684,14 +1389,6 @@
                                         "minimum": 1
                                     }
                                 ]
-                            },
-                            "boardId": {
-                                "description": "PyOCD Board Identifier. Needed if multiple compatible boards are connected.",
-                                "type": "string"
-                            },
-                            "cmsisPack": {
-                                "description": "Path to a CMSIS-Pack file. Use to add extra device support.",
-                                "type": "string"
                             },
                             "BMPGDBSerialPort": {
                                 "type": "string",
@@ -1710,15 +1407,9 @@
                         "properties": {
                             "servertype": {
                                 "type": "string",
-                                "description": "GDB Server type - supported types are jlink, openocd, pyocd, pe, stlink, stutil, qemu, bmp and external. For \"external\", [please read our Wiki](https://github.com/Marus/cortex-debug/wiki/External-gdb-server-configuration). The executable in your PATH is used by default, to override this use serverpath.",
+                                "description": "GDB Server type - supported types are bmp, qemu, and external.",
                                 "enum": [
-                                    "jlink",
-                                    "openocd",
-                                    "pyocd",
-                                    "stutil",
-                                    "stlink",
                                     "bmp",
-                                    "pe",
                                     "qemu",
                                     "external"
                                 ]
@@ -1844,8 +1535,11 @@
                             },
                             "rtos": {
                                 "default": null,
-                                "description": "RTOS being used. For JLink this can be Azure, ChibiOS, embOS, FreeRTOS, NuttX, Zephyr or the path to a custom JLink RTOS Plugin library. For OpenOCD this can be auto (recommended), FreeRTOS, ThreadX, chibios, Chromium-EC, eCos, embKernel, linux, mqx, nuttx, RIOT, uCOS-III, or Zephyr.",
-                                "type": "string"
+                                "description": "RTOS being used. Currently only \"zephyr\" is supported. When set to \"zephyr\", the extension will automatically source zephyr_gdb.py and enable MI command overrides for RTOS thread awareness.",
+                                "type": "string",
+                                "enum": [
+                                    "zephyr"
+                                ]
                             },
                             "overrideMICommands": {
                                 "default": false,
@@ -2052,45 +1746,6 @@
                                 "default": {
                                     "enabled": true,
                                     "samplesPerSecond": 4
-                                }
-                            },
-                            "ctiOpenOCDConfig": {
-                                "description": "Experimental. Does not work yet",
-                                "properties": {
-                                    "enabled": {
-                                        "default": true,
-                                        "description": "Enable/Disable Cross Trigger Interface/Matrix for synchronized pause/resume",
-                                        "type": "boolean"
-                                    },
-                                    "initCommands": {
-                                        "default": [],
-                                        "description": "List of OpenOCD TCL commands to initialize the CTI/CTM infrastructure (if any)",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "pauseCommands": {
-                                        "default": [],
-                                        "description": "List of OpenOCD TCL commands to pause all processors",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "resumeCommands": {
-                                        "default": [],
-                                        "description": "List of OpenOCD TCL commands to resume all processors",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
-                                    }
-                                },
-                                "default": {
-                                    "enabled": true,
-                                    "pauseCommands": [],
-                                    "resumeCommands": []
                                 }
                             },
                             "chainedConfigurations": {
@@ -2827,20 +2482,9 @@
                                 "required": [],
                                 "type": "object"
                             },
-                            "ipAddress": {
-                                "default": null,
-                                "description": "IP Address for networked J-Link Adapter",
-                                "pattern": "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$",
-                                "type": "string"
-                            },
-                            "serialNumber": {
-                                "default": null,
-                                "description": "J-Link or ST-LINK Serial Number - only needed if multiple J-Links/ST-LINKs are connected to the computer",
-                                "type": "string"
-                            },
                             "interface": {
                                 "default": "swd",
-                                "description": "Debug Interface type to use for connections (defaults to SWD) - Used for J-Link, ST-LINK and BMP probes.",
+                                "description": "Debug Interface type to use for connections (defaults to SWD) - Used for BMP probes.",
                                 "type": "string",
                                 "enum": [
                                     "swd",
@@ -2848,59 +2492,8 @@
                                     "cjtag"
                                 ]
                             },
-                            "jlinkscript": {
-                                "default": null,
-                                "description": "J-Link script file - optional input file for customizing J-Link actions.",
-                                "type": "string"
-                            },
-                            "openOCDLaunchCommands": {
-                                "default": [],
-                                "description": "OpenOCD command(s) after configuration files are loaded (-c options)",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "openOCDPreConfigLaunchCommands": {
-                                "default": [],
-                                "description": "OpenOCD command(s) before configuration files are loaded (-c options)",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "configFiles": {
-                                "description": "OpenOCD/PE GDB Server configuration file(s) to use when debugging (OpenOCD -f option)",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "searchDir": {
-                                "default": [],
-                                "description": "OpenOCD directories to search for config files and scripts (-s option). If no search directories are specified, it defaults to the configured cwd.",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "v1": {
-                                "default": false,
-                                "description": "For st-util only. Set this to true if your debug probe is a ST-Link V1 (for example, the ST-Link on the STM32 VL Discovery is a V1 device). When set to false a ST-Link V2 device is used.",
-                                "type": "boolean"
-                            },
-                            "stlinkPath": {
-                                "default": null,
-                                "description": "Path to the ST-LINK_gdbserver executable. If not set then ST-LINK_gdbserver (ST-LINK_gdbserver.exe on Windows) must be on the system path.",
-                                "type": "string"
-                            },
-                            "stm32cubeprogrammer": {
-                                "default": null,
-                                "description": "This path is normally resolved to the installed STM32CubeIDE or STM32CubeProgrammer but can be overridden here.",
-                                "type": "string"
-                            },
                             "targetId": {
-                                "description": "On BMP this is the ID number that should be passed to the attach command (defaults to 1); for PyOCD this is the target identifier (only needed for custom hardware)",
+                                "description": "On BMP this is the ID number that should be passed to the attach command (defaults to 1).",
                                 "type": [
                                     "string",
                                     "number"
@@ -2914,14 +2507,6 @@
                                         "minimum": 1
                                     }
                                 ]
-                            },
-                            "boardId": {
-                                "description": "PyOCD Board Identifier. Needed if multiple compatible boards are connected.",
-                                "type": "string"
-                            },
-                            "cmsisPack": {
-                                "description": "Path to a CMSIS-Pack file. Use to add extra device support.",
-                                "type": "string"
                             },
                             "BMPGDBSerialPort": {
                                 "type": "string",
@@ -2942,74 +2527,48 @@
                         "body": {
                             "cwd": "^\"\\${workspaceFolder}\"",
                             "executable": "${1:./bin/executable.elf}",
-                            "name": "${6:Debug with JLink}",
+                            "name": "${6:Debug with BMP}",
                             "request": "launch",
                             "type": "cortex-debug",
-                            "device": "",
                             "runToEntryPoint": "main",
                             "showDevDebugOutput": "none",
-                            "servertype": "jlink"
+                            "servertype": "bmp",
+                            "BMPGDBSerialPort": "${2:/dev/ttyACM0}",
+                            "interface": "swd"
                         },
-                        "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + JLink",
-                        "label": "Cortex Debug: JLink"
-                    },
-                    {
-                        "body": {
-                            "cwd": "^\"\\${workspaceRoot}\"",
-                            "executable": "${1:./bin/executable.elf}",
-                            "name": "${6:Debug with OpenOCD}",
-                            "request": "launch",
-                            "type": "cortex-debug",
-                            "servertype": "openocd",
-                            "configFiles": [],
-                            "searchDir": [],
-                            "runToEntryPoint": "main",
-                            "showDevDebugOutput": "none"
-                        },
-                        "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + OpenOCD",
-                        "label": "Cortex Debug: OpenOCD"
+                        "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + Black Magic Probe",
+                        "label": "Cortex Debug: BMP"
                     },
                     {
                         "body": {
                             "cwd": "^\"\\${workspaceFolder}\"",
                             "executable": "${1:./bin/executable.elf}",
-                            "name": "${6:Debug with ST-Link}",
+                            "name": "${6:Debug with QEMU}",
                             "request": "launch",
                             "type": "cortex-debug",
                             "runToEntryPoint": "main",
                             "showDevDebugOutput": "none",
-                            "servertype": "stlink"
+                            "servertype": "qemu",
+                            "cpu": "cortex-m3",
+                            "machine": "lm3s6965evb"
                         },
-                        "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + STMicroelectronic's ST-LINK_gdbserver part of STM32CubeIDE",
-                        "label": "Cortex Debug: ST-LINK"
+                        "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + QEMU",
+                        "label": "Cortex Debug: QEMU"
                     },
                     {
                         "body": {
                             "cwd": "^\"\\${workspaceFolder}\"",
                             "executable": "${1:./bin/executable.elf}",
-                            "name": "${6:Debug with PyOCD}",
+                            "name": "${6:Debug with External GDB Server}",
                             "request": "launch",
                             "type": "cortex-debug",
                             "runToEntryPoint": "main",
                             "showDevDebugOutput": "none",
-                            "servertype": "pyocd"
+                            "servertype": "external",
+                            "gdbTarget": "${2:localhost:3333}"
                         },
-                        "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + PyOCD",
-                        "label": "Cortex Debug: PyOCD"
-                    },
-                    {
-                        "body": {
-                            "cwd": "^\"\\${workspaceFolder}\"",
-                            "executable": "${1:./bin/executable.elf}",
-                            "name": "${6:Debug with ST-Util}",
-                            "request": "launch",
-                            "type": "cortex-debug",
-                            "runToEntryPoint": "main",
-                            "showDevDebugOutput": "none",
-                            "servertype": "stutil"
-                        },
-                        "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + Texane's st-util GDB Server (https://github.com/texane/stlink)",
-                        "label": "Cortex Debug: ST-Util"
+                        "description": "Debugs an embedded ARM Cortex-M microcontroller using an externally started GDB Server",
+                        "label": "Cortex Debug: External"
                     }
                 ],
                 "label": "Cortex Debug",

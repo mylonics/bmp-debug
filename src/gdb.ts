@@ -1069,6 +1069,13 @@ export class GDBDebugSession extends LoggingDebugSession {
             ...this.formatRadixGdbCommand()
         ];
 
+        // Auto-source zephyr_gdb.py when rtos is set to zephyr
+        if (this.args.rtos === 'zephyr') {
+            this.gdbInitCommands.push(
+                `interpreter-exec console "source ${this.args.extensionPath}/support/zephyr_gdb.py"`
+            );
+        }
+
         const loadFiles = this.args.loadFiles;
         let isLoaded = false;
         if (this.args.symbolFiles) {

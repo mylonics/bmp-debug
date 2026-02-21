@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as os from 'os';
-import { STLinkServerController } from './../stlink';
 import { GDBServerConsole } from './server_console';
 import {
     ADAPTER_DEBUG_MODE, ChainedConfigurations, ChainedEvents, CortexDebugKeys,
@@ -10,24 +9,7 @@ import {
 import { CDebugChainedSessionItem, CDebugSession } from './cortex_debug_session';
 import * as path from 'path';
 
-// Please confirm these names with OpenOCD source code. Their docs are incorrect as to case
-const OPENOCD_VALID_RTOS: string[] = [
-    'auto',
-    'FreeRTOS',
-    'ThreadX',
-    'chibios',
-    'Chromium-EC',
-    'eCos',
-    'embKernel',
-    // 'hwthread',
-    'linux',
-    'mqx',
-    'nuttx',
-    'RIOT',
-    'uCOS-III',
-    'Zephyr'
-];
-const JLINK_VALID_RTOS: string[] = ['Azure', 'ChibiOS', 'embOS', 'FreeRTOS', 'NuttX', 'Zephyr'];
+const VALID_RTOS: string[] = ['zephyr'];
 
 export class CortexDebugConfigurationProvider implements vscode.DebugConfigurationProvider {
     constructor(private context: vscode.ExtensionContext) {}
@@ -40,7 +22,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
             request: 'launch',
             type: 'cortex-debug',
             runToEntryPoint: 'main',
-            servertype: 'jlink'
+            servertype: 'bmp'
         }];
     }
 
@@ -138,31 +120,9 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
                 'launch.json: "runToMain" has been deprecated and will not work in future versions of Cortex-Debug. Please use "runToEntryPoint" instead');
         }
 
-        if ((type !== 'openocd') || !config.ctiOpenOCDConfig?.enabled) {
-            delete config.ctiOpenOCDConfig;
-        }
-
         switch (type) {
-            case 'jlink':
-                validationResponse = this.verifyJLinkConfiguration(folder, config);
-                break;
-            case 'openocd':
-                validationResponse = this.verifyOpenOCDConfiguration(folder, config);
-                break;
-            case 'stutil':
-                validationResponse = this.verifySTUtilConfiguration(folder, config);
-                break;
-            case 'stlink':
-                validationResponse = this.verifySTLinkConfiguration(folder, config);
-                break;
-            case 'pyocd':
-                validationResponse = this.verifyPyOCDConfiguration(folder, config);
-                break;
             case 'bmp':
                 validationResponse = this.verifyBMPConfiguration(folder, config);
-                break;
-            case 'pe':
-                validationResponse = this.verifyPEConfiguration(folder, config);
                 break;
             case 'external':
                 validationResponse = this.verifyExternalConfiguration(folder, config);
@@ -172,13 +132,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
                 break;
             default: {
                 const validValues = [
-                    'jlink',
-                    'openocd',
-                    'stutil',
-                    'stlink',
-                    'pyocd',
                     'bmp',
-                    'pe',
                     'external',
                     'qemu'
                 ].map((s) => `"${s}"`).join(', ');
@@ -205,15 +159,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         if (config.armToolchainPath) { config.toolchainPath = config.armToolchainPath; }
         this.setOsSpecficConfigSetting(config, 'toolchainPath', 'armToolchainPath');
 
-        if (!config.toolchainPath) {
-            if (!config.armToolchainPath && config.servertype === 'stlink') {
-                // Special case to auto-resolve GCC toolchain for STM32CubeIDE users. Doesn't quite work
-                // if you are using WSL or remote debug. It will be re-calcutate later anyways in the debug adapter
-                const stController = new STLinkServerController();
-                config.armToolchainPath = stController.getArmToolchainPath();
-                config.toolchainPath = config.armToolchainPath;
-            }
-        }
+
 
         if (!config.toolchainPrefix) {
             config.toolchainPrefix = configuration.armToolchainPrefix || 'arm-none-eabi';
@@ -260,27 +206,15 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         config.pvtVersion = extension?.packageJSON?.version || '<unknown version>';
 
         if (config.liveWatch?.enabled) {
-            const supportedList = ['openocd', 'jlink', 'stlink'];
-            if (supportedList.indexOf(config.servertype) < 0) {
-                const str = supportedList.join(', ');
-                vscode.window.showInformationMessage(
-                    `Live watch is not officially supported for servertype '${config.servertype}'. `
-                    + `Only ${str} are supported and tested. `
-                    + `Report back to us if it works with your servertype '${config.servertype}'.\n \n`
-                    + 'If you are using an "external" servertype and it is working for you, then you can safely ignore this message. ');
-            }
+            vscode.window.showInformationMessage(
+                `Live watch may not be supported for servertype '${config.servertype}'. `
+                + 'Report back to us if it works with your servertype.\n \n'
+                + 'If you are using an "external" servertype and it is working for you, then you can safely ignore this message. ');
         }
 
         let validationResponse: string = null;
-        switch (config.servertype) {
-            case 'jlink':
-                validationResponse = this.verifyJLinkConfigurationAfterSubstitution(folder, config);
-                break;
-            default:
-                /* config.servertype was already checked in resolveDebugConfiguration */
-                validationResponse = null;
-                break;
-        }
+        /* config.servertype was already checked in resolveDebugConfiguration */
+        validationResponse = null;
         if (validationResponse) {
             vscode.window.showErrorMessage(validationResponse);
             return undefined;
@@ -511,149 +445,13 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
             config.graphConfig = [];
         }
 
-        if (config.rtos) {
-            return 'RTOS support is not available when using QEMU';
+        if (config.rtos && VALID_RTOS.indexOf(config.rtos) === -1) {
+            return `Invalid RTOS value "${config.rtos}". Supported values: ${VALID_RTOS.join(', ')}`;
         }
 
-        return null;
-    }
-
-    private verifyJLinkConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        if (config.jlinkpath && !config.serverpath) { config.serverpath = config.jlinkpath; }   // Obsolete
-        if (!config.interface && config.jlinkInterface) { config.interface = config.jlinkInterface; }
-        if (!config.interface) { config.interface = 'swd'; }
-
-        this.setOsSpecficConfigSetting(config, 'serverpath', 'JLinkGDBServerPath');
-
-        if (!config.device) {
-            return 'Device Identifier is required for J-Link configurations. '
-                + 'Please see https://www.segger.com/downloads/supported-devices.php for supported devices';
+        if (config.rtos === 'zephyr') {
+            config.overrideMICommands = true;
         }
-
-        if (((config.interface === 'jtag') || (config.interface === 'cjtag')) && config.swoConfig.enabled && config.swoConfig.source === 'probe') {
-            return 'SWO Decoding cannot be performed through the J-Link Probe in JTAG mode.';
-        }
-
-        if (config.rttConfig && config.rttConfig.enabled && config.rttConfig.decoders && (config.rttConfig.decoders.length !== 0)) {
-            let chosenPort;
-            for (const dec of config.rttConfig.decoders) {
-                if (dec.port === undefined) {
-                    dec.port = 0;
-                } else if (dec.port < 0 || dec.port > 15) {
-                    return `Invalid port/channel '${dec.port}'.  JLink RTT port/channel must be between 0 and 15.`;
-                }
-
-                if ((chosenPort !== undefined) && (chosenPort !== dec.port)) {
-                    return `Port/channel ${dec.port} selected but another decoder is using port ${chosenPort}. `
-                        + 'JLink RTT only allows a single RTT port/channel per debugging session.';
-                } else {
-                    chosenPort = dec.port;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private verifyJLinkConfigurationAfterSubstitution(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        function defaultExt() {
-            switch (os.platform()) {
-                case 'darwin':
-                    return '.dylib';
-                case 'linux':
-                    return '.so';
-                case 'win32':
-                    return '.dll';
-                default:
-                    console.log(`Unknown platform ${os.platform()}`);
-                    return '';
-            }
-        }
-
-        if (config.rtos) {
-            if (JLINK_VALID_RTOS.indexOf(config.rtos) === -1) {
-                /* When we do not have a file extension use the default OS one for file check, as J-Link allows the
-                 * parameter to be used without one.
-                 */
-                if ('' === path.extname(config.rtos)) {
-                    config.rtos = config.rtos + defaultExt();
-                }
-
-                if (!fs.existsSync(config.rtos)) {
-                    return `JLink RTOS plugin file "${config.rtos}" not found.\n`
-                        + `The following RTOS values are supported by J-Link: ${JLINK_VALID_RTOS.join(', ')}.`
-                        + ' A custom plugin can be used by supplying a complete path to a J-Link GDB Server Plugin.';
-                }
-            } else {
-                config.rtos = `GDBServer/RTOSPlugin_${config.rtos}` + defaultExt();
-            }
-        }
-
-        return null;
-    }
-
-    private verifyOpenOCDConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        if (config.openOCDPath && !config.serverpath) { config.serverpath = config.openOCDPath; }   // Obsolete
-        this.setOsSpecficConfigSetting(config, 'serverpath', 'openocdPath');
-
-        if (config.rtos && OPENOCD_VALID_RTOS.indexOf(config.rtos) === -1) {
-            return `The following RTOS values are supported by OpenOCD: ${OPENOCD_VALID_RTOS.join(' ')}.`
-                + 'You can always use "auto" and OpenOCD generally does the right thing';
-        }
-
-        if (!CDebugChainedSessionItem.FindByName(config.name)) {
-            // Not chained so configFiles, searchDir matter
-            if (!config.configFiles || config.configFiles.length === 0) {
-                return 'At least one OpenOCD Configuration File must be specified.';
-            }
-
-            if (!config.searchDir || config.searchDir.length === 0) {
-                config.searchDir = [];
-            }
-        }
-
-        return null;
-    }
-
-    private verifySTUtilConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        if (config.stutilpath && !config.serverpath) { config.serverpath = config.stutilpath; }     // obsolete
-        this.setOsSpecficConfigSetting(config, 'serverpath', 'stutilPath');
-
-        if (config.rtos) {
-            return 'The st-util GDB Server does not have support for the rtos option.';
-        }
-
-        if (config.swoConfig.enabled && config.swoConfig.source === 'probe') {
-            vscode.window.showWarningMessage('SWO support is not available from the probe when using the ST-Util GDB server. Disabling SWO.');
-            config.swoConfig = { enabled: false, ports: [], cpuFrequency: 0, swoFrequency: 0 };
-            config.graphConfig = [];
-        }
-
-        return null;
-    }
-
-    private verifySTLinkConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        if (config.stlinkPath && !config.serverpath) { config.serverpath = config.stlinkPath; } // Obsolete
-        this.setOsSpecficConfigSetting(config, 'serverpath', 'stlinkPath');
-        this.setOsSpecficConfigSetting(config, 'stm32cubeprogrammer');
-
-        if (config.rtos) {
-            return 'The ST-Link GDB Server does not have support for the rtos option.';
-        }
-
-        return null;
-    }
-
-    private verifyPyOCDConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        if (config.pyocdPath && !config.serverpath) { config.serverpath = config.pyocdPath; }   // Obsolete
-        this.setOsSpecficConfigSetting(config, 'serverpath', 'pyocdPath');
-
-        if (config.rtos) {
-            return 'The PyOCD GDB Server does not have support for the rtos option.';
-        }
-
-        if (config.board && !config.boardId) { config.boardId = config.board; }
-        if (config.target && !config.targetId) { config.targetId = config.target; }
 
         return null;
     }
@@ -664,26 +462,12 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         if (!config.interface) { config.interface = 'swd'; }
         if (!config.targetId) { config.targetId = 1; }
 
-        if (config.rtos) {
-            return 'The Black Magic Probe GDB Server does not have support for the rtos option.';
+        if (config.rtos && VALID_RTOS.indexOf(config.rtos) === -1) {
+            return `Invalid RTOS value "${config.rtos}". Supported values: ${VALID_RTOS.join(', ')}`;
         }
 
-        return null;
-    }
-
-    private verifyPEConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): string {
-        this.setOsSpecficConfigSetting(config, 'serverpath', 'PEGDBServerPath');
-
-        if (config.configFiles && config.configFiles.length > 1) {
-            return 'Only one pegdbserver Configuration File is allowed.';
-        }
-
-        if (!config.device) {
-            return 'Device Identifier is required for PE configurations. Please run `pegdbserver_console.exe -devicelist` for supported devices';
-        }
-
-        if (config.swoConfig.enabled && config.swoConfig.source !== 'socket') {
-            return 'The PE GDB Server Only supports socket type SWO';
+        if (config.rtos === 'zephyr') {
+            config.overrideMICommands = true;
         }
 
         return null;
@@ -704,6 +488,14 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
 
         if (!config.gdbTarget) {
             return 'External GDB server type must specify the GDB target. This should either be a "hostname:port" combination or a serial port.';
+        }
+
+        if (config.rtos && VALID_RTOS.indexOf(config.rtos) === -1) {
+            return `Invalid RTOS value "${config.rtos}". Supported values: ${VALID_RTOS.join(', ')}`;
+        }
+
+        if (config.rtos === 'zephyr') {
+            config.overrideMICommands = true;
         }
 
         return null;
