@@ -46,7 +46,7 @@ export class Server {
     }
 
     public hello(sessionId: string): Interfaces.helloReturn {
-        const config = vscode.workspace.getConfiguration('cortex-debug');
+        const config = vscode.workspace.getConfiguration('bmp-debug');
         const settings: { [key: string]: any } = {};
         for (const [key, value] of Object.entries(config)) {
             if ((typeof value !== 'function') && (value !== null) && (value !== undefined)) {

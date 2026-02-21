@@ -51,39 +51,39 @@ export class CortexDebugExtension {
     private serverStartedEvent: ServerStartedPromise;
 
     constructor(private context: vscode.ExtensionContext) {
-        const config = vscode.workspace.getConfiguration('cortex-debug');
+        const config = vscode.workspace.getConfiguration('bmp-debug');
         this.startServerConsole(context, config.get(CortexDebugKeys.SERVER_LOG_FILE_NAME, '')); // Make this the first thing we do to be ready for the session
         this.memoryProvider = new MemoryContentProvider();
 
         Reporting.activate(context);
 
         this.liveWatchProvider = new LiveWatchTreeProvider(this.context);
-        this.liveWatchTreeView = vscode.window.createTreeView('cortex-debug.liveWatch', {
+        this.liveWatchTreeView = vscode.window.createTreeView('bmp-debug.liveWatch', {
             treeDataProvider: this.liveWatchProvider
         });
 
-        vscode.commands.executeCommand('setContext', `cortex-debug:${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`,
+        vscode.commands.executeCommand('setContext', `bmp-debug:${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`,
             config.get(CortexDebugKeys.VARIABLE_DISPLAY_MODE, true));
 
         context.subscriptions.push(
             vscode.workspace.registerTextDocumentContentProvider('examinememory', this.memoryProvider),
 
-            vscode.commands.registerCommand('cortex-debug.varHexModeTurnOn', this.variablesNaturalMode.bind(this, false)),
-            vscode.commands.registerCommand('cortex-debug.varHexModeTurnOff', this.variablesNaturalMode.bind(this, true)),
-            vscode.commands.registerCommand('cortex-debug.toggleVariableHexFormat', this.toggleVariablesHexMode.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.varHexModeTurnOn', this.variablesNaturalMode.bind(this, false)),
+            vscode.commands.registerCommand('bmp-debug.varHexModeTurnOff', this.variablesNaturalMode.bind(this, true)),
+            vscode.commands.registerCommand('bmp-debug.toggleVariableHexFormat', this.toggleVariablesHexMode.bind(this)),
 
-            vscode.commands.registerCommand('cortex-debug.examineMemory', this.examineMemory.bind(this)),
-            vscode.commands.registerCommand('cortex-debug.examineMemoryLegacy', this.examineMemoryLegacy.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.examineMemory', this.examineMemory.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.examineMemoryLegacy', this.examineMemoryLegacy.bind(this)),
 
-            vscode.commands.registerCommand('cortex-debug.resetDevice', this.resetDevice.bind(this)),
-            vscode.commands.registerCommand('cortex-debug.pvtEnableDebug', this.pvtCycleDebugMode.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.resetDevice', this.resetDevice.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.pvtEnableDebug', this.pvtCycleDebugMode.bind(this)),
 
-            vscode.commands.registerCommand('cortex-debug.liveWatch.addExpr', this.addLiveWatchExpr.bind(this)),
-            vscode.commands.registerCommand('cortex-debug.liveWatch.removeExpr', this.removeLiveWatchExpr.bind(this)),
-            vscode.commands.registerCommand('cortex-debug.liveWatch.editExpr', this.editLiveWatchExpr.bind(this)),
-            vscode.commands.registerCommand('cortex-debug.liveWatch.addToLiveWatch', this.addToLiveWatch.bind(this)),
-            vscode.commands.registerCommand('cortex-debug.liveWatch.moveUp', this.moveUpLiveWatchExpr.bind(this)),
-            vscode.commands.registerCommand('cortex-debug.liveWatch.moveDown', this.moveDownLiveWatchExpr.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.liveWatch.addExpr', this.addLiveWatchExpr.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.liveWatch.removeExpr', this.removeLiveWatchExpr.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.liveWatch.editExpr', this.editLiveWatchExpr.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.liveWatch.addToLiveWatch', this.addToLiveWatch.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.liveWatch.moveUp', this.moveUpLiveWatchExpr.bind(this)),
+            vscode.commands.registerCommand('bmp-debug.liveWatch.moveDown', this.moveDownLiveWatchExpr.bind(this)),
 
             vscode.workspace.onDidChangeConfiguration(this.settingsChanged.bind(this)),
             vscode.debug.onDidReceiveDebugSessionCustomEvent(this.receivedCustomEvent.bind(this)),
@@ -96,7 +96,7 @@ export class CortexDebugExtension {
                 if (e && e.textEditor.document.fileName.endsWith('.cdmem')) { this.memoryProvider.handleSelection(e); }
             }),
 
-            vscode.debug.registerDebugConfigurationProvider('cortex-debug', new CortexDebugConfigurationProvider(context)),
+            vscode.debug.registerDebugConfigurationProvider('bmp-debug', new CortexDebugConfigurationProvider(context)),
 
             this.liveWatchTreeView,
             this.liveWatchTreeView.onDidExpandElement((e) => {
@@ -118,7 +118,7 @@ export class CortexDebugExtension {
 
     public static getActiveCDSession() {
         const session = vscode.debug.activeDebugSession;
-        if (session?.type === 'cortex-debug') {
+        if (session?.type === 'bmp-debug') {
             return session;
         }
         return null;
@@ -163,8 +163,8 @@ export class CortexDebugExtension {
     }
 
     private settingsChanged(e: vscode.ConfigurationChangeEvent) {
-        if (e.affectsConfiguration(`cortex-debug.${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`)) {
-            const config = vscode.workspace.getConfiguration('cortex-debug');
+        if (e.affectsConfiguration(`bmp-debug.${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`)) {
+            const config = vscode.workspace.getConfiguration('bmp-debug');
             const isHex = config.get(CortexDebugKeys.VARIABLE_DISPLAY_MODE, true) ? false : true;
             let foundStopped = false;
             for (const s of CDebugSession.CurrentSessions) {
@@ -186,17 +186,17 @@ export class CortexDebugExtension {
             }
             if (!foundStopped) {
                 const fmt = isHex ? 'hex' : 'dec';
-                const msg = `Cortex-Debug: Variables window format "${fmt}" will take effect next time the session pauses`;
+                const msg = `BMP-Debug: Variables window format "${fmt}" will take effect next time the session pauses`;
                 vscode.window.showInformationMessage(msg);
             }
         }
-        if (e.affectsConfiguration(`cortex-debug.${CortexDebugKeys.SERVER_LOG_FILE_NAME}`)) {
-            const config = vscode.workspace.getConfiguration('cortex-debug');
+        if (e.affectsConfiguration(`bmp-debug.${CortexDebugKeys.SERVER_LOG_FILE_NAME}`)) {
+            const config = vscode.workspace.getConfiguration('bmp-debug');
             const fName = config.get(CortexDebugKeys.SERVER_LOG_FILE_NAME, '');
             this.gdbServerConsole.createLogFile(fName);
         }
-        if (e.affectsConfiguration(`cortex-debug.${CortexDebugKeys.DEV_DEBUG_MODE}`)) {
-            const config = vscode.workspace.getConfiguration('cortex-debug');
+        if (e.affectsConfiguration(`bmp-debug.${CortexDebugKeys.DEV_DEBUG_MODE}`)) {
+            const config = vscode.workspace.getConfiguration('bmp-debug');
             const dbgMode = config.get(CortexDebugKeys.DEV_DEBUG_MODE, ADAPTER_DEBUG_MODE.NONE);
             for (const s of CDebugSession.CurrentSessions) {
                 try {
@@ -272,7 +272,7 @@ export class CortexDebugExtension {
 
         const session = CortexDebugExtension.getActiveCDSession();
         if (!session) {
-            vscode.window.showErrorMessage('No cortex-debug session available');
+            vscode.window.showErrorMessage('No bmp-debug session available');
             return;
         }
 
@@ -359,9 +359,9 @@ export class CortexDebugExtension {
     private variablesNaturalMode(newVal: boolean, cxt?: any) {
         // 'cxt' contains the treeItem on which this menu was invoked. Maybe we can do something
         // with it later
-        const config = vscode.workspace.getConfiguration('cortex-debug');
+        const config = vscode.workspace.getConfiguration('bmp-debug');
 
-        vscode.commands.executeCommand('setContext', `cortex-debug:${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`, newVal);
+        vscode.commands.executeCommand('setContext', `bmp-debug:${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`, newVal);
         try {
             const [target, languageOverride] = this.getConfigSource(config, CortexDebugKeys.VARIABLE_DISPLAY_MODE);
             config.update(CortexDebugKeys.VARIABLE_DISPLAY_MODE, newVal, target, languageOverride);
@@ -373,10 +373,10 @@ export class CortexDebugExtension {
     private toggleVariablesHexMode() {
         // 'cxt' contains the treeItem on which this menu was invoked. Maybe we can do something
         // with it later
-        const config = vscode.workspace.getConfiguration('cortex-debug');
+        const config = vscode.workspace.getConfiguration('bmp-debug');
         const curVal = config.get(CortexDebugKeys.VARIABLE_DISPLAY_MODE, true);
         const newVal = !curVal;
-        vscode.commands.executeCommand('setContext', `cortex-debug:${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`, newVal);
+        vscode.commands.executeCommand('setContext', `bmp-debug:${CortexDebugKeys.VARIABLE_DISPLAY_MODE}`, newVal);
         try {
             const [target, languageOverride] = this.getConfigSource(config, CortexDebugKeys.VARIABLE_DISPLAY_MODE);
             config.update(CortexDebugKeys.VARIABLE_DISPLAY_MODE, newVal, target, languageOverride);
@@ -386,7 +386,7 @@ export class CortexDebugExtension {
     }
 
     private pvtCycleDebugMode() {
-        const config = vscode.workspace.getConfiguration('cortex-debug');
+        const config = vscode.workspace.getConfiguration('bmp-debug');
         const curVal: ADAPTER_DEBUG_MODE = config.get(CortexDebugKeys.DEV_DEBUG_MODE, ADAPTER_DEBUG_MODE.NONE);
         const validVals = Object.values(ADAPTER_DEBUG_MODE);
         let ix = validVals.indexOf(curVal);
@@ -396,7 +396,7 @@ export class CortexDebugExtension {
 
     // Debug Events
     private debugSessionStarted(session: vscode.DebugSession) {
-        if (session.type !== 'cortex-debug') { return; }
+        if (session.type !== 'bmp-debug') { return; }
 
         const newSession = CDebugSession.NewSessionStarted(session);
 
@@ -424,7 +424,7 @@ export class CortexDebugExtension {
     }
 
     private debugSessionTerminated(session: vscode.DebugSession) {
-        if (session.type !== 'cortex-debug') { return; }
+        if (session.type !== 'bmp-debug') { return; }
         const mySession = CDebugSession.FindSession(session);
         try {
             Reporting.endSession(session.id);
@@ -454,7 +454,7 @@ export class CortexDebugExtension {
 
     private receivedCustomEvent(e: vscode.DebugSessionCustomEvent) {
         const session = e.session;
-        if (session.type !== 'cortex-debug') { return; }
+        if (session.type !== 'bmp-debug') { return; }
         switch (e.event) {
             case 'custom-stop':
                 this.receivedStopEvent(e);
@@ -626,7 +626,7 @@ export class CortexDebugExtension {
                 ServerConsoleLog(`Sending custom-stop-debugging to ${s.session.name}`, process.pid);
                 s.session.customRequest('custom-stop-debugging', e.body.info).then(() => {
                 }, (reason) => {
-                    vscode.window.showErrorMessage(`Cortex-Debug: Bug? session.customRequest('set-stop-debugging-type', ... failed ${reason}\n`);
+                    vscode.window.showErrorMessage(`BMP-Debug: Bug? session.customRequest('set-stop-debugging-type', ... failed ${reason}\n`);
                 });
             }
             // Following does not work. Apparently, a customRequest cannot be sent probably because this session is already
@@ -678,7 +678,7 @@ export class CortexDebugExtension {
     private getCurrentArgs(session: vscode.DebugSession): ConfigurationArguments {
         if (!session) {
             session = vscode.debug.activeDebugSession;
-            if (!session || (session.type !== 'cortex-debug')) {
+            if (!session || (session.type !== 'bmp-debug')) {
                 return undefined;
             }
         }
@@ -689,7 +689,7 @@ export class CortexDebugExtension {
         return session.configuration as unknown as ConfigurationArguments;
     }
 
-    // Assuming 'session' valid and it a cortex-debug session
+    // Assuming 'session' valid and it a bmp-debug session
     private isDebugging(session: vscode.DebugSession) {
         const { noDebug } = this.getCurrentArgs(session);
         return (noDebug !== true);       // If it is exactly equal to 'true' we are doing a 'run without debugging'
@@ -917,7 +917,7 @@ export class CortexDebugExtension {
 export function activate(context: vscode.ExtensionContext) {
     try {
         CortexDebugChannel.createDebugChanne();
-        CortexDebugChannel.debugMessage('Starting Cortex-Debug extension.');
+        CortexDebugChannel.debugMessage('Starting BMP-Debug extension.');
     } catch (_e) { /* empty */ }
 
     return new CortexDebugExtension(context);

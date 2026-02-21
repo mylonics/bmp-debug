@@ -112,7 +112,7 @@ export class CDebugSession {
     public static NewSessionStarted(session: vscode.DebugSession): CDebugSession {
         const newSession = CDebugSession.GetSession(session);       // May have already in the global list
         newSession.status = 'started';
-        if (session.parentSession && (session.parentSession.type === 'cortex-debug')) {
+        if (session.parentSession && (session.parentSession.type === 'bmp-debug')) {
             const parent = CDebugSession.FindSession(session.parentSession);
             if (!parent) {
                 vscode.window.showErrorMessage(

@@ -2,7 +2,7 @@
     "version": "0.0.1",
     "preview": false,
     "activationEvents": [
-        "onDebugResolve:cortex-debug",
+        "onDebugResolve:bmp-debug",
         "onStartupFinished"
     ],
     "categories": [
@@ -14,12 +14,12 @@
                 "type": "object",
                 "title": "Debugger",
                 "properties": {
-                    "cortex-debug.variableUseNaturalFormat": {
+                    "bmp-debug.variableUseNaturalFormat": {
                         "type": "boolean",
                         "default": true,
                         "description": "If true, display variables in their natural format as specified by ARM. Hex otherwise."
                     },
-                    "cortex-debug.liveWatchRefreshRate": {
+                    "bmp-debug.liveWatchRefreshRate": {
                         "default": 300,
                         "description": "GUI refresh frequency in milliseconds. Your sample rate can be much faster than refresh rate. VSCode UI cannot handle high refresh rates and your Live Watch window will look frozen. Do not recommend below 250ms as it will not be legible anyways. Anything below 200ms did not work at all for us",
                         "type": "number",
@@ -33,7 +33,7 @@
                 "type": "object",
                 "title": "External: GNU Tools",
                 "properties": {
-                    "cortex-debug.armToolchainPath": {
+                    "bmp-debug.armToolchainPath": {
                         "type": [
                             "string",
                             "null"
@@ -41,7 +41,7 @@
                         "default": null,
                         "description": "Path to the GCC Arm Toolchain (standard prefix is \"arm-none-eabi\" - can be set through the armToolchainPrefix setting) to use. If not set the tools must be on the system path. Do not include the executable file name in this path."
                     },
-                    "cortex-debug.armToolchainPath.linux": {
+                    "bmp-debug.armToolchainPath.linux": {
                         "type": [
                             "string",
                             "null"
@@ -49,7 +49,7 @@
                         "default": null,
                         "description": "Path to the GCC Arm Toolchain (standard prefix is \"arm-none-eabi\" - can be set through the armToolchainPrefix setting) to use. If not set the tools must be on the system path. Do not include the executable file name in this path."
                     },
-                    "cortex-debug.armToolchainPath.osx": {
+                    "bmp-debug.armToolchainPath.osx": {
                         "type": [
                             "string",
                             "null"
@@ -57,7 +57,7 @@
                         "default": null,
                         "description": "Path to the GCC Arm Toolchain (standard prefix is \"arm-none-eabi\" - can be set through the armToolchainPrefix setting) to use. If not set the tools must be on the system path. Do not include the executable file name in this path."
                     },
-                    "cortex-debug.armToolchainPath.windows": {
+                    "bmp-debug.armToolchainPath.windows": {
                         "type": [
                             "string",
                             "null"
@@ -65,7 +65,7 @@
                         "default": null,
                         "description": "Path to the GCC Arm Toolchain (standard prefix is \"arm-none-eabi\" - can be set through the armToolchainPrefix setting) to use. If not set the tools must be on the system path. Do not include the executable file name in this path."
                     },
-                    "cortex-debug.armToolchainPrefix": {
+                    "bmp-debug.armToolchainPrefix": {
                         "type": [
                             "string",
                             "null"
@@ -73,7 +73,7 @@
                         "default": "arm-none-eabi",
                         "description": "The prefix to use for the arm toolchain - the standard release from arm uses \"arm-none-eabi\" but alternative toolchains may use a different prefix. Currently the gdb, objdump and nm tools are needed."
                     },
-                    "cortex-debug.gdbPath.linux": {
+                    "bmp-debug.gdbPath.linux": {
                         "type": [
                             "string",
                             "null"
@@ -81,7 +81,7 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the GDB executable. This is useful for cases where your gdb executable doesn't follow the standard <tuple>-gdb format - for example `gdb-multiarch`. This can be just the executable name (if on the system path) or the full path."
                     },
-                    "cortex-debug.gdbPath.osx": {
+                    "bmp-debug.gdbPath.osx": {
                         "type": [
                             "string",
                             "null"
@@ -89,7 +89,7 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the GDB executable. This is useful for cases where your gdb executable doesn't follow the standard <tuple>-gdb format - for example `gdb-multiarch`. This can be just the executable name (if on the system path) or the full path."
                     },
-                    "cortex-debug.gdbPath.windows": {
+                    "bmp-debug.gdbPath.windows": {
                         "type": [
                             "string",
                             "null"
@@ -97,7 +97,7 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the GDB executable. This is useful for cases where your gdb executable doesn't follow the standard <tuple>-gdb format - for example `gdb-multiarch`. This can be just the executable name (if on the system path) or the full path."
                     },
-                    "cortex-debug.gdbPath": {
+                    "bmp-debug.gdbPath": {
                         "type": [
                             "string",
                             "null"
@@ -105,7 +105,7 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the GDB executable. This is useful for cases where your gdb executable doesn't follow the standard <tuple>-gdb format - for example `gdb-multiarch`. This can be just the executable name (if on the system path) or the full path."
                     },
-                    "cortex-debug.objdumpPath.linux": {
+                    "bmp-debug.objdumpPath.linux": {
                         "type": [
                             "string",
                             "null"
@@ -113,7 +113,7 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the objdump executable. This is useful for cases where your objdump executable doesn't follow the standard <tuple>-objdump format - for example `objdump-multiarch`. This can be just the executable name (if on the system path) or the full path. The program 'nm' is also expected alongside"
                     },
-                    "cortex-debug.objdumpPath.osx": {
+                    "bmp-debug.objdumpPath.osx": {
                         "type": [
                             "string",
                             "null"
@@ -121,7 +121,7 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the objdump executable. This is useful for cases where your objdump executable doesn't follow the standard <tuple>-objdump format - for example `objdump-multiarch`. This can be just the executable name (if on the system path) or the full path. The program 'nm' is also expected alongside"
                     },
-                    "cortex-debug.objdumpPath.windows": {
+                    "bmp-debug.objdumpPath.windows": {
                         "type": [
                             "string",
                             "null"
@@ -129,7 +129,7 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the objdump executable. This is useful for cases where your objdump executable doesn't follow the standard <tuple>-objdump format - for example `objdump-multiarch`. This can be just the executable name (if on the system path) or the full path. The program 'nm' is also expected alongside"
                     },
-                    "cortex-debug.objdumpPath": {
+                    "bmp-debug.objdumpPath": {
                         "type": [
                             "string",
                             "null"
@@ -137,13 +137,13 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the objdump executable. This is useful for cases where your objdump executable doesn't follow the standard <tuple>-objdump format - for example `objdump-multiarch`. This can be just the executable name (if on the system path) or the full path. The program 'nm' is also expected alongside"
                     },
-                    "cortex-debug.internalDebugOptions": {
+                    "bmp-debug.internalDebugOptions": {
                         "description": "Internal debug options to debug this extension. These options must ideally be selected before you start VSCode",
                         "type": "object",
                         "properties": {
                             "file": {
                                 "type": "string",
-                                "default": "cortex-debug-log-${PID}.txt",
+                                "default": "bmp-debug-log-${PID}.txt",
                                 "description": "Pathname were debug output is stored. If empty or not-writable, no output is created. Use ${PID} in the file name to make it unique per a session"
                             },
                             "disassembly": {
@@ -159,12 +159,12 @@
                 "type": "object",
                 "title": "Miscellaneous",
                 "properties": {
-                    "cortex-debug.enableTelemetry": {
+                    "bmp-debug.enableTelemetry": {
                         "type": "boolean",
                         "default": true,
-                        "description": "Enable Telemetry for the Cortex-Debug Extension. Reporting will also respect the global telemetry.enableTelemetry setting."
+                        "description": "Enable Telemetry for the BMP-Debug Extension. Reporting will also respect the global telemetry.enableTelemetry setting."
                     },
-                    "cortex-debug.dbgServerLogfile": {
+                    "bmp-debug.dbgServerLogfile": {
                         "type": [
                             "string",
                             "null"
@@ -177,7 +177,7 @@
         ],
         "commands": [
             {
-                "command": "cortex-debug.resetDevice",
+                "command": "bmp-debug.resetDevice",
                 "title": "Reset device",
                 "icon": {
                     "dark": "images/reset-dark.svg",
@@ -185,7 +185,7 @@
                 }
             },
             {
-                "command": "cortex-debug.varHexModeTurnOff",
+                "command": "bmp-debug.varHexModeTurnOff",
                 "title": "Disable Hex mode",
                 "icon": {
                     "light": "images/hex-on-light.svg",
@@ -193,7 +193,7 @@
                 }
             },
             {
-                "command": "cortex-debug.varHexModeTurnOn",
+                "command": "bmp-debug.varHexModeTurnOn",
                 "title": "Enable Hex mode",
                 "icon": {
                     "light": "images/hex-off-light.svg",
@@ -201,64 +201,64 @@
                 }
             },
             {
-                "command": "cortex-debug.liveWatch.removeExpr",
+                "command": "bmp-debug.liveWatch.removeExpr",
                 "title": "Remove expression",
                 "icon": "$(close)"
             },
             {
-                "command": "cortex-debug.liveWatch.editExpr",
+                "command": "bmp-debug.liveWatch.editExpr",
                 "title": "Edit expression",
                 "icon": "$(edit)"
             },
             {
-                "command": "cortex-debug.liveWatch.moveUp",
+                "command": "bmp-debug.liveWatch.moveUp",
                 "title": "Move expression up",
                 "icon": "$(arrow-up)"
             },
             {
-                "command": "cortex-debug.liveWatch.moveDown",
+                "command": "bmp-debug.liveWatch.moveDown",
                 "title": "Move expression down",
                 "icon": "$(arrow-down)"
             },
             {
-                "command": "cortex-debug.liveWatch.addToLiveWatch",
+                "command": "bmp-debug.liveWatch.addToLiveWatch",
                 "title": "Add to Live Watch",
                 "icon": "$(plus)"
             },
             {
-                "category": "Cortex-Debug",
-                "command": "cortex-debug.examineMemory",
+                "category": "bmp-debug",
+                "command": "bmp-debug.examineMemory",
                 "title": "View Memory"
             },
             {
-                "category": "Cortex-Debug",
-                "command": "cortex-debug.examineMemoryLegacy",
+                "category": "bmp-debug",
+                "command": "bmp-debug.examineMemoryLegacy",
                 "title": "View Memory (Legacy)"
             },
             {
-                "category": "Cortex-Debug",
-                "command": "cortex-debug.toggleVariableHexFormat",
+                "category": "bmp-debug",
+                "command": "bmp-debug.toggleVariableHexFormat",
                 "title": "Toggle hex display in Variables window"
             },
             {
-                "category": "Cortex-Debug",
-                "command": "cortex-debug.liveWatch.addExpr",
+                "category": "bmp-debug",
+                "command": "bmp-debug.liveWatch.addExpr",
                 "title": "Add expression to Live Watch window",
                 "icon": "$(plus)"
             }
         ],
         "keybindings": [
             {
-                "command": "cortex-debug.toggleVariableHexFormat",
+                "command": "bmp-debug.toggleVariableHexFormat",
                 "key": "ctrl+shift+x",
-                "when": "debugType == cortex-debug"
+                "when": "debugType == bmp-debug"
             }
         ],
         "languages": [
             {
-                "id": "cortex-debug.memoryview",
+                "id": "bmp-debug.memoryview",
                 "aliases": [
-                    "Cortex-Debug Memory View"
+                    "BMP-Debug Memory View"
                 ],
                 "extensions": [
                     ".cdmem"
@@ -267,9 +267,9 @@
         ],
         "grammars": [
             {
-                "language": "cortex-debug.memoryview",
-                "scopeName": "source.cortex-debug-memoryview",
-                "path": "./syntaxes/cortex-debug-memoryview.json"
+                "language": "bmp-debug.memoryview",
+                "scopeName": "source.bmp-debug-memoryview",
+                "path": "./syntaxes/bmp-debug-memoryview.json"
             }
         ],
         "breakpoints": [
@@ -295,7 +295,7 @@
                 "language": "s"
             },
             {
-                "language": "cortex-debug.disassembly"
+                "language": "bmp-debug.disassembly"
             }
         ],
         "debuggers": [
@@ -399,7 +399,7 @@
                                 "description": "Override the commands that are normally executed at the start of ending a debug session (e.g. when stopping debugging)."
                             },
                             "overrideGDBServerStartedRegex": {
-                                "description": "You can supply a regular expression (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) in the configuration property to override the output from the GDB Server that is looked for to determine if the GDB Server has started. Under most circumstances this will not be necessary - but could be needed as a result of a change in the output of a GDB Server making it incompatible with cortex-debug. This property has no effect for bmp or external GDB Server types.",
+                                "description": "You can supply a regular expression (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) in the configuration property to override the output from the GDB Server that is looked for to determine if the GDB Server has started. Under most circumstances this will not be necessary - but could be needed as a result of a change in the output of a GDB Server making it incompatible with bmp-debug. This property has no effect for bmp or external GDB Server types.",
                                 "type": "string",
                                 "default": null
                             },
@@ -921,7 +921,7 @@
                                     },
                                     "address": {
                                         "type": "string",
-                                        "description": "Address to start searching for the RTT control block. Use \"auto\" for Cortex-Debug to use the address from elf file",
+                                        "description": "Address to start searching for the RTT control block. Use \"auto\" for BMP-Debug to use the address from elf file",
                                         "default": "auto"
                                     },
                                     "searchSize": {
@@ -1506,7 +1506,7 @@
                                 "description": "Override the commands that are normally executed at the start of ending a debug session (e.g. when stopping debugging)."
                             },
                             "overrideGDBServerStartedRegex": {
-                                "description": "You can supply a regular expression (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) in the configuration property to override the output from the GDB Server that is looked for to determine if the GDB Server has started. Under most circumstances this will not be necessary - but could be needed as a result of a change in the output of a GDB Server making it incompatible with cortex-debug. This property has no effect for bmp or external GDB Server types.",
+                                "description": "You can supply a regular expression (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) in the configuration property to override the output from the GDB Server that is looked for to determine if the GDB Server has started. Under most circumstances this will not be necessary - but could be needed as a result of a change in the output of a GDB Server making it incompatible with bmp-debug. This property has no effect for bmp or external GDB Server types.",
                                 "type": "string",
                                 "default": null
                             },
@@ -2039,7 +2039,7 @@
                                     },
                                     "address": {
                                         "type": "string",
-                                        "description": "Address to start searching for the RTT control block. Use \"auto\" for Cortex-Debug to use the address from elf file",
+                                        "description": "Address to start searching for the RTT control block. Use \"auto\" for BMP-Debug to use the address from elf file",
                                         "default": "auto"
                                     },
                                     "searchSize": {
@@ -2529,7 +2529,7 @@
                             "executable": "${1:./bin/executable.elf}",
                             "name": "${6:Debug with BMP}",
                             "request": "launch",
-                            "type": "cortex-debug",
+                            "type": "bmp-debug",
                             "runToEntryPoint": "main",
                             "showDevDebugOutput": "none",
                             "servertype": "bmp",
@@ -2537,7 +2537,7 @@
                             "interface": "swd"
                         },
                         "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + Black Magic Probe",
-                        "label": "Cortex Debug: BMP"
+                        "label": "BMP Debug: Black Magic Probe"
                     },
                     {
                         "body": {
@@ -2545,7 +2545,7 @@
                             "executable": "${1:./bin/executable.elf}",
                             "name": "${6:Debug with QEMU}",
                             "request": "launch",
-                            "type": "cortex-debug",
+                            "type": "bmp-debug",
                             "runToEntryPoint": "main",
                             "showDevDebugOutput": "none",
                             "servertype": "qemu",
@@ -2553,7 +2553,7 @@
                             "machine": "lm3s6965evb"
                         },
                         "description": "Debugs an embedded ARM Cortex-M microcontroller using GDB + QEMU",
-                        "label": "Cortex Debug: QEMU"
+                        "label": "BMP Debug: QEMU"
                     },
                     {
                         "body": {
@@ -2561,20 +2561,20 @@
                             "executable": "${1:./bin/executable.elf}",
                             "name": "${6:Debug with External GDB Server}",
                             "request": "launch",
-                            "type": "cortex-debug",
+                            "type": "bmp-debug",
                             "runToEntryPoint": "main",
                             "showDevDebugOutput": "none",
                             "servertype": "external",
                             "gdbTarget": "${2:localhost:3333}"
                         },
                         "description": "Debugs an embedded ARM Cortex-M microcontroller using an externally started GDB Server",
-                        "label": "Cortex Debug: External"
+                        "label": "BMP Debug: External"
                     }
                 ],
-                "label": "Cortex Debug",
+                "label": "BMP Debug",
                 "program": "./dist/debugadapter.js",
                 "runtime": "node",
-                "type": "cortex-debug",
+                "type": "bmp-debug",
                 "variables": {},
                 "languages": [
                     "c",
@@ -2586,96 +2586,96 @@
         "menus": {
             "commandPalette": [
                 {
-                    "command": "cortex-debug.examineMemory",
-                    "when": "debugType == cortex-debug"
+                    "command": "bmp-debug.examineMemory",
+                    "when": "debugType == bmp-debug"
                 },
                 {
-                    "command": "cortex-debug.examineMemoryLegacy",
-                    "when": "debugType == cortex-debug"
+                    "command": "bmp-debug.examineMemoryLegacy",
+                    "when": "debugType == bmp-debug"
                 },
                 {
-                    "command": "cortex-debug.resetDevice",
-                    "when": "debugType == cortex-debug"
+                    "command": "bmp-debug.resetDevice",
+                    "when": "debugType == bmp-debug"
                 },
                 {
-                    "command": "cortex-debug.toggleVariableHexFormat",
-                    "when": "debugType == cortex-debug"
+                    "command": "bmp-debug.toggleVariableHexFormat",
+                    "when": "debugType == bmp-debug"
                 },
                 {
-                    "command": "cortex-debug.liveWatch.addExpr",
-                    "when": "debugType === cortex-debug"
+                    "command": "bmp-debug.liveWatch.addExpr",
+                    "when": "debugType === bmp-debug"
                 }
             ],
             "debug/toolBar": [
                 {
-                    "command": "cortex-debug.resetDevice",
+                    "command": "bmp-debug.resetDevice",
                     "group": "navigation",
-                    "when": "debugType == cortex-debug"
+                    "when": "debugType == bmp-debug"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "cortex-debug.liveWatch.editExpr",
-                    "when": "view == cortex-debug.liveWatch && viewItem == expression",
+                    "command": "bmp-debug.liveWatch.editExpr",
+                    "when": "view == bmp-debug.liveWatch && viewItem == expression",
                     "group": "inline"
                 },
                 {
-                    "command": "cortex-debug.liveWatch.moveUp",
-                    "when": "view == cortex-debug.liveWatch && viewItem == expression",
+                    "command": "bmp-debug.liveWatch.moveUp",
+                    "when": "view == bmp-debug.liveWatch && viewItem == expression",
                     "group": "inline"
                 },
                 {
-                    "command": "cortex-debug.liveWatch.moveDown",
-                    "when": "view == cortex-debug.liveWatch && viewItem == expression",
+                    "command": "bmp-debug.liveWatch.moveDown",
+                    "when": "view == bmp-debug.liveWatch && viewItem == expression",
                     "group": "inline"
                 },
                 {
-                    "command": "cortex-debug.liveWatch.removeExpr",
-                    "when": "view == cortex-debug.liveWatch && viewItem == expression",
+                    "command": "bmp-debug.liveWatch.removeExpr",
+                    "when": "view == bmp-debug.liveWatch && viewItem == expression",
                     "group": "inline"
                 }
             ],
             "view/title": [
                 {
-                    "command": "cortex-debug.liveWatch.addExpr",
-                    "when": "view == cortex-debug.liveWatch",
+                    "command": "bmp-debug.liveWatch.addExpr",
+                    "when": "view == bmp-debug.liveWatch",
                     "group": "navigation"
                 },
                 {
-                    "command": "cortex-debug.varHexModeTurnOn",
-                    "when": "view == workbench.debug.variablesView && inDebugMode && debugType == 'cortex-debug' && debugState == stopped &&  cortex-debug:variableUseNaturalFormat",
+                    "command": "bmp-debug.varHexModeTurnOn",
+                    "when": "view == workbench.debug.variablesView && inDebugMode && debugType == 'bmp-debug' && debugState == stopped &&  bmp-debug:variableUseNaturalFormat",
                     "group": "navigation"
                 },
                 {
-                    "command": "cortex-debug.varHexModeTurnOff",
-                    "when": "view == workbench.debug.variablesView && inDebugMode && debugType == 'cortex-debug' && debugState == stopped && !cortex-debug:variableUseNaturalFormat",
+                    "command": "bmp-debug.varHexModeTurnOff",
+                    "when": "view == workbench.debug.variablesView && inDebugMode && debugType == 'bmp-debug' && debugState == stopped && !bmp-debug:variableUseNaturalFormat",
                     "group": "navigation"
                 },
                 {
-                    "command": "cortex-debug.varHexModeTurnOn",
-                    "when": "view == workbench.debug.watchExpressionsView && inDebugMode && debugType == 'cortex-debug' && debugState == stopped &&  cortex-debug:variableUseNaturalFormat",
+                    "command": "bmp-debug.varHexModeTurnOn",
+                    "when": "view == workbench.debug.watchExpressionsView && inDebugMode && debugType == 'bmp-debug' && debugState == stopped &&  bmp-debug:variableUseNaturalFormat",
                     "group": "navigation"
                 },
                 {
-                    "command": "cortex-debug.varHexModeTurnOff",
-                    "when": "view == workbench.debug.watchExpressionsView && inDebugMode && debugType == 'cortex-debug' && debugState == stopped && !cortex-debug:variableUseNaturalFormat",
+                    "command": "bmp-debug.varHexModeTurnOff",
+                    "when": "view == workbench.debug.watchExpressionsView && inDebugMode && debugType == 'bmp-debug' && debugState == stopped && !bmp-debug:variableUseNaturalFormat",
                     "group": "navigation"
                 },
                 {
-                    "command": "cortex-debug.varHexModeTurnOn",
-                    "when": "view == cortex-debug.liveWatch && inDebugMode && debugType == 'cortex-debug' && debugState == stopped &&  cortex-debug:variableUseNaturalFormat",
+                    "command": "bmp-debug.varHexModeTurnOn",
+                    "when": "view == bmp-debug.liveWatch && inDebugMode && debugType == 'bmp-debug' && debugState == stopped &&  bmp-debug:variableUseNaturalFormat",
                     "group": "navigation"
                 },
                 {
-                    "command": "cortex-debug.varHexModeTurnOff",
-                    "when": "view == cortex-debug.liveWatch && inDebugMode && debugType == 'cortex-debug' && debugState == stopped && !cortex-debug:variableUseNaturalFormat",
+                    "command": "bmp-debug.varHexModeTurnOff",
+                    "when": "view == bmp-debug.liveWatch && inDebugMode && debugType == 'bmp-debug' && debugState == stopped && !bmp-debug:variableUseNaturalFormat",
                     "group": "navigation"
                 }
             ],
             "debug/variables/context": [
                 {
-                    "command": "cortex-debug.liveWatch.addToLiveWatch",
-                    "when": "inDebugMode && debugType == 'cortex-debug' && debugState == stopped",
+                    "command": "bmp-debug.liveWatch.addToLiveWatch",
+                    "when": "inDebugMode && debugType == 'bmp-debug' && debugState == stopped",
                     "group": "navigation"
                 }
             ]
@@ -2683,9 +2683,9 @@
         "views": {
             "debug": [
                 {
-                    "id": "cortex-debug.liveWatch",
-                    "name": "Cortex Live Watch",
-                    "when": "debugType == cortex-debug"
+                    "id": "bmp-debug.liveWatch",
+                    "name": "BMP Live Watch",
+                    "when": "debugType == bmp-debug"
                 }
             ]
         }
@@ -2714,7 +2714,7 @@
         "uuid": "^11.0.5",
         "vscode-jsonrpc": "^8.2.1"
     },
-    "description": "ARM Cortex-M GDB Debugger support for VSCode",
+    "description": "Black Magic Probe GDB Debugger with Zephyr RTOS support for VSCode",
     "devDependencies": {
         "@stylistic/eslint-plugin": "^2.13.0",
         "@types/mocha": "^10.0.10",
@@ -2731,7 +2731,7 @@
         "webpack": "^5.97.1",
         "webpack-cli": "^6.0.1"
     },
-    "displayName": "Cortex-Debug",
+    "displayName": "BMP-Debug",
     "engines": {
         "vscode": "^1.69.0"
     },
@@ -2749,15 +2749,15 @@
         "mcu-debug.peripheral-viewer"
     ],
     "main": "./dist/extension.js",
-    "name": "cortex-debug",
-    "publisher": "marus25",
+    "name": "bmp-debug",
+    "publisher": "mylonics",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Marus/cortex-debug.git"
+        "url": "https://github.com/Marus/bmp-debug.git"
     },
     "bugs": {
-        "url": "https://github.com/Marus/cortex-debug/issues"
+        "url": "https://github.com/mylonics/bmp-debug/issues"
     },
     "scripts": {
         "vscode:prepublish": "npm run lint && webpack --mode production && node dist/docgen.js && npm ci -C binary_modules --omit dev && cp -a binary_modules/node_modules dist/",

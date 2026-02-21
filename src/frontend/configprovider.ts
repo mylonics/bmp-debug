@@ -16,11 +16,11 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
 
     public provideDebugConfigurations(): vscode.ProviderResult<vscode.DebugConfiguration[]> {
         return [{
-            name: 'Cortex Debug',
+            name: 'BMP Debug',
             cwd: '${workspaceFolder}',
             executable: './bin/executable.elf',
             request: 'launch',
-            type: 'cortex-debug',
+            type: 'bmp-debug',
             runToEntryPoint: 'main',
             servertype: 'bmp'
         }];
@@ -141,7 +141,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
             }
         }
 
-        const configuration = vscode.workspace.getConfiguration('cortex-debug');
+        const configuration = vscode.workspace.getConfiguration('bmp-debug');
         if (config.pvtAdapterDebugOptions === undefined) {
             config.pvtAdapterDebugOptions = configuration.get('pvtAdapterDebugOptions', {});
         }
@@ -158,8 +158,6 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
 
         if (config.armToolchainPath) { config.toolchainPath = config.armToolchainPath; }
         this.setOsSpecficConfigSetting(config, 'toolchainPath', 'armToolchainPath');
-
-
 
         if (!config.toolchainPrefix) {
             config.toolchainPrefix = configuration.armToolchainPrefix || 'arm-none-eabi';
@@ -202,7 +200,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         }
         this.validateLoadAndSymbolFiles(config, cwd);
 
-        const extension = vscode.extensions.getExtension('marus25.cortex-debug');
+        const extension = vscode.extensions.getExtension('mylonics.bmp-debug');
         config.pvtVersion = extension?.packageJSON?.version || '<unknown version>';
 
         if (config.liveWatch?.enabled) {
@@ -415,7 +413,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
     private setOsSpecficConfigSetting(config: vscode.DebugConfiguration, dstName: string, propName: string = '') {
         if (!config[dstName]) {
             propName = propName || dstName;
-            const settings = vscode.workspace.getConfiguration('cortex-debug');
+            const settings = vscode.workspace.getConfiguration('bmp-debug');
             const obj = settings[propName];
             if ((obj !== undefined) && (obj !== null)) {
                 if (typeof obj === 'object') {

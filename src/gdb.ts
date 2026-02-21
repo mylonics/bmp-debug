@@ -421,8 +421,8 @@ export class GDBDebugSession extends LoggingDebugSession {
         this.args = this.normalizeArguments(args);
 
         this.handleMsg('stdout',
-            `Cortex-Debug: VSCode debugger extension version ${args.pvtVersion} git(${__COMMIT_HASH__}). `
-            + 'Usage info: https://github.com/Marus/cortex-debug#usage');
+            `BMP-Debug: VSCode debugger extension version ${args.pvtVersion} git(${__COMMIT_HASH__}). `
+            + 'Usage info: https://github.com/mylonics/bmp-debug#usage');
         if (this.args.showDevDebugOutput) {
             this.handleMsg('stderr', `INFO: A log of gdb-servers, gdb, debug adapter start/stop/pid info can be found in '${getServerLogFilePath()}'.\n`);
         }
@@ -464,14 +464,14 @@ export class GDBDebugSession extends LoggingDebugSession {
         let limit = this.args.hardwareBreakpoints?.limit || 0;
         this.hwBreakpointMgr = new HWBreakpointMgr(limit, forceHW);
         if (forceHW) {
-            const limitMsg = (limit > 0) ? `Limit of ${limit} breakpoints will be enforced by cortex-debug` : 'GDB enforces any limits you may have configured';
+            const limitMsg = (limit > 0) ? `Limit of ${limit} breakpoints will be enforced by bmp-debug` : 'GDB enforces any limits you may have configured';
             this.handleMsg('stderr', `INFO: All breakpoints will be requested as hardware breakpoints. ${limitMsg}\n`);
         }
         forceHW = this.args.hardwareWatchpoints?.require || false;
         limit = this.args.hardwareWatchpoints?.limit || 0;
         this.hwWatchpointMgr = new HWBreakpointMgr(limit, forceHW);
         if (forceHW && (limit > 0)) {
-            const limitMsg = `Limit of ${limit} watchpoints will be enforced by cortex-debug`;
+            const limitMsg = `Limit of ${limit} watchpoints will be enforced by bmp-debug`;
             this.handleMsg('stderr', `INFO: All watchpoints are done by GDB as hardware watchpoints (default). ${limitMsg}\n`);
         }
     }
@@ -1015,7 +1015,7 @@ export class GDBDebugSession extends LoggingDebugSession {
             gdbExePath = path.normalize(path.join(this.args.toolchainPath, gdbExePath));
         }
         const gdbMissingMsg = `GDB executable "${gdbExePath}" was not found.\n`
-            + 'Please configure "cortex-debug.armToolchainPath" or "cortex-debug.gdbPath" correctly.';
+            + 'Please configure "bmp-debug.armToolchainPath" or "bmp-debug.gdbPath" correctly.';
 
         if (this.args.gdbPath) {
             gdbExePath = this.args.gdbPath;
@@ -2353,7 +2353,7 @@ export class GDBDebugSession extends LoggingDebugSession {
         const str = brk ? JSON.stringify(brk) : '';
         this.handleMsg('log', `Hardware breakpoint limit reached (${limit}) for breakpoint ${str}. Further breakpoints will not be set.\n`);
         return new MIError(
-            `Hardware breakpoint limit reached (${limit}). Calculated by cortex-debug and not gdb.`,
+            `Hardware breakpoint limit reached (${limit}). Calculated by bmp-debug and not gdb.`,
             'internal'
         );
     }
@@ -2652,7 +2652,7 @@ export class GDBDebugSession extends LoggingDebugSession {
                 this.handleMsg('log', 'Returning dummy thread-id to workaround VSCode issue with pause button not working\n');
             }
             const useThread = this.currentThreadId || (this.activeThreadIds.size ? this.activeThreadIds.values[0] : 1);
-            response.body.threads = [new Thread(useThread, 'cortex-debug-dummy-thread')];
+            response.body.threads = [new Thread(useThread, 'bmp-debug-dummy-thread')];
             this.sendResponse(response);
             return Promise.resolve();
         }
@@ -2762,7 +2762,7 @@ export class GDBDebugSession extends LoggingDebugSession {
         args.startFrame = args.startFrame ?? 0;
         args.levels = args.levels ?? Infinity;
         const createDummy = () => {
-            response.body.stackFrames = [new StackFrame(encodeReference(args.threadId, 0), 'cortex-debug-dummy', null, 0, 0)];
+            response.body.stackFrames = [new StackFrame(encodeReference(args.threadId, 0), 'bmp-debug-dummy', null, 0, 0)];
             response.body.totalFrames = 1;
         };
         const isBusy = () => {
@@ -3642,13 +3642,13 @@ const twoCharsToIntMap = initTwoCharsToIntMap();
 
 process.on('uncaughtException', (err) => {
     const msg = err && err.stack ? err.stack : (err.message ? err.message : 'unknown error');
-    console.error('cortex-debug: Caught exception:', msg);
+    console.error('bmp-debug: Caught exception:', msg);
     ServerConsoleLog('Caught exception: ' + msg);
     process.exit(1); // The process is in an unreliable state, so exit is recommended
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    const msg = 'cortex-debug: Unhandled Rejection: reason: ' + reason.toString() + ' promise: ' + promise.toString();
+    const msg = 'bmp-debug: Unhandled Rejection: reason: ' + reason.toString() + ' promise: ' + promise.toString();
     console.error(msg);
     ServerConsoleLog(msg);
 });
@@ -3656,7 +3656,7 @@ process.on('unhandledRejection', (reason, promise) => {
 try {
     LoggingDebugSession.run(GDBDebugSession);
 } catch (error) {
-    console.error('cortex-debug: Error occurred while running GDBDebugSession:', error);
-    ServerConsoleLog('cortex-debug: Caught exception: ' + error.toString());
+    console.error('bmp-debug: Error occurred while running GDBDebugSession:', error);
+    ServerConsoleLog('bmp-debug: Caught exception: ' + error.toString());
     throw error;
 }

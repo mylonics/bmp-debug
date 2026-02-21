@@ -417,7 +417,7 @@ export class LiveWatchTreeProvider implements TreeDataProvider<LiveVariableNode>
 
     private currentRefreshRate = LiveWatchTreeProvider.defaultRefreshRate;
     private settingsChanged(e: vscode.ConfigurationChangeEvent) {
-        if (e.affectsConfiguration('cortex-debug.liveWatchRefreshRate')) {
+        if (e.affectsConfiguration('bmp-debug.liveWatchRefreshRate')) {
             this.setRefreshRate();
         }
     }
@@ -426,7 +426,7 @@ export class LiveWatchTreeProvider implements TreeDataProvider<LiveVariableNode>
     private static minRefreshRate = 200;        // Seems to be the magic number
     private static maxRefreshRate = 5000;
     private setRefreshRate() {
-        const config = vscode.workspace.getConfiguration('cortex-debug', null);
+        const config = vscode.workspace.getConfiguration('bmp-debug', null);
         let rate = config.get('liveWatchRefreshRate', LiveWatchTreeProvider.defaultRefreshRate);
         rate = Math.max(rate, LiveWatchTreeProvider.minRefreshRate);
         rate = Math.min(rate, LiveWatchTreeProvider.maxRefreshRate);

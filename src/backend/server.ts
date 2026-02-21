@@ -14,7 +14,7 @@ let ServerLogFilePath: string = null;
 export function getServerLogFilePath(): string {
     if (!ServerLogFilePath) {
         const tmpDirName = os.tmpdir();
-        ServerLogFilePath = path.join(tmpDirName, 'cortex-debug-server.log');
+        ServerLogFilePath = path.join(tmpDirName, 'bmp-debug-server.log');
     }
     return ServerLogFilePath;
 }

@@ -1,7 +1,7 @@
 {
-	"name": "cortex-debug-remote",
-	"displayName": "cortex-debug-remote",
-	"description": "Extension to support VSCode remote developent with Cortex-Debug",
+	"name": "bmp-debug-remote",
+	"displayName": "bmp-debug-remote",
+	"description": "Extension to support VSCode remote developent with BMP-Debug",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.63.0"
@@ -10,10 +10,10 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onDebugResolve:cortex-debug"
+		"onDebugResolve:BMP-Debug"
 	],
 	"main": "./dist/extension.js",
-	"publisher": "marus25",
+	"publisher": "mylonics",
 	"license": "MIT",
 	"extensionKind": [
 		"ui"
@@ -21,7 +21,7 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "cortex-debug-remote.helloWorld",
+				"command": "BMP-Debug-remote.helloWorld",
 				"title": "Hello World"
 			}
 		]

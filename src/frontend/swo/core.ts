@@ -209,7 +209,7 @@ class SWOWebview {
         };
 
         const title = `SWO/RTT Graphs [${time}]`;
-        this.viewPanel = vscode.window.createWebviewPanel('cortex-debug.grapher', title, showOptions, viewOptions);
+        this.viewPanel = vscode.window.createWebviewPanel('bmp-debug.grapher', title, showOptions, viewOptions);
         this.viewPanel.webview.onDidReceiveMessage((msg) => {
             this.onMessage(msg);
         });
