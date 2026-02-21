@@ -66,6 +66,7 @@ export class MI2 extends EventEmitter implements IBackend {
     protected lastContinueSeqId = -1;
     protected actuallyStarted = false;
     protected isExiting = false;
+    public overrideMICommands = false;
     // public gdbVarsPromise: Promise<MINode> = null;
 
     constructor(public application: string, public args: string[], public forLiveGdb = false) {
@@ -1038,6 +1039,53 @@ export class MI2 extends EventEmitter implements IBackend {
         return !!this.process;
     }
 
+    /**
+     * When overrideMICommands is enabled, rewrite standard MI commands and
+     * options to their "-override-" equivalents so that a GDB Python
+     * extension (e.g. zephyr_gdb.py) can intercept them.
+     *
+     * For directly overridden commands (thread-info, thread-list-ids,
+     * thread-select, stack-list-frames), the command name is rewritten
+     * and --thread becomes --override-thread.
+     *
+     * For all other commands, --thread N is stripped and the thread ID
+     * is returned in preSelectThread so the caller can pre-send an
+     * override-thread-select to set the correct register context.
+     */
+    private applyMICommandOverrides(command: string): { command: string; preSelectThread?: number } {
+        if (!this.overrideMICommands) {
+            return { command };
+        }
+        // Check if this is one of the directly overridden commands
+        const overrides: Array<[RegExp, string]> = [
+            [/^thread-info\b/, 'override-thread-info'],
+            [/^thread-list-ids\b/, 'override-thread-list-ids'],
+            [/^thread-select\b/, 'override-thread-select'],
+            [/^stack-list-frames\b/, 'override-stack-list-frames'],
+        ];
+        for (const [pattern, replacement] of overrides) {
+            if (pattern.test(command)) {
+                command = command.replace(pattern, replacement);
+                // For overridden commands, --thread becomes --override-thread
+                // (the Python handler parses it)
+                command = command.replace(/--thread\b/g, '--override-thread');
+                return { command };
+            }
+        }
+        // For all other commands, replace --thread N with --thread 1 (the
+        // single real GDB thread) so GDB's MI layer doesn't reject it.
+        // We can't simply strip --thread because GDB requires it when
+        // --frame is also present. The caller will pre-send
+        // override-thread-select to set the correct register context.
+        const threadMatch = command.match(/--thread\s+(\d+)/);
+        if (threadMatch) {
+            const preSelectThread = parseInt(threadMatch[1]);
+            command = command.replace(/--thread\s+\d+/, '--thread 1');
+            return { command, preSelectThread };
+        }
+        return { command };
+    }
+
     public sendOneCommand(args: SendCommaindIF): Thenable<MINode> {
         const sel = this.currentToken++;
         return new Promise((resolve, reject) => {
@@ -1111,6 +1159,26 @@ export class MI2 extends EventEmitter implements IBackend {
                 this.commandQueueBusy = true;
                 const obj = this.commandQueue.shift();
                 try {
+                    // Apply MI command overrides (rewrite command names, handle --thread)
+                    const overrideResult = this.applyMICommandOverrides(obj.command);
+                    obj.command = overrideResult.command;
+                    // For non-overridden commands that had --thread N, pre-select the
+                    // Zephyr thread to set the correct register context before the
+                    // native GDB command runs (without --thread).
+                    if (overrideResult.preSelectThread !== undefined) {
+                        try {
+                            await this.sendOneCommand({
+                                command: `override-thread-select ${overrideResult.preSelectThread}`,
+                                suppressFailure: true,
+                                swallowStdout: false,
+                                forceNoDebug: false,
+                                resolve: () => {},
+                                reject: () => {}
+                            });
+                        } catch (e) {
+                            // Pre-select failure is non-fatal
+                        }
+                    }
                     const result = await this.sendOneCommand(obj);
                     obj.resolve(result);
                 } catch (e) {
