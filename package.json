@@ -2748,7 +2748,11 @@
         "cortex-m",
         "gdb",
         "debug",
-        "embedded"
+        "embedded",
+        "black magic probe",
+        "bmp",
+        "rtos",
+        "zephyr"
     ],
     "extensionDependencies": [
         "mcu-debug.debug-tracker-vscode",

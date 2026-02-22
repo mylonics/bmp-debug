@@ -1,0 +1,184 @@
+# This workflow handles version bumping and optionally triggers release PR creation.
+#
+# How to use:
+# 1. Run this workflow manually from GitHub Actions
+# 2. Select version bump type (patch/minor/major)
+# 3. Select release type:
+#    - none: Only bump version (no release)
+#    - release: Bump version and auto-create PR to main branch
+#    - prerelease: Bump version and auto-create PR to pre-release branch
+#
+# What happens:
+# 1. Version is bumped in package.json
+# 2. PR is created to develop branch with auto-merge enabled (SQUASH)
+# 3. After PR merges, if release type is not 'none', auto-create-release-pr.yml
+#    workflow automatically creates a PR to main or pre-release branch
+# 4. When that PR merges, release.yml publishes the extension automatically
+
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: "Version bump type"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      release_type:
+        description: "Release type (auto-creates PR after merge to develop)"
+        required: true
+        type: choice
+        options:
+          - none
+          - release
+          - prerelease
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump_version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout develop branch
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Bump version and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          # Build commit message with release type tag if specified
+          RELEASE_TAG=""
+          if [ "${{ inputs.release_type }}" != "none" ]; then
+            RELEASE_TAG=" [${{ inputs.release_type }}]"
+          fi
+
+          # Use npm version with custom message to include release tag
+          npm version ${{ inputs.bump_type }} -m "%s${RELEASE_TAG}"
+          VERSION=$(jq -r '.version' package.json)
+
+          # --- Auto-generate CHANGELOG entry from git history ---
+          # Find the previous version tag (most recent tag matching vX.Y.Z)
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          HEADER="# V${VERSION}"
+
+          if [ -n "$PREV_TAG" ]; then
+            echo "Generating changelog from ${PREV_TAG}..HEAD"
+            # Collect commit subjects since last tag, one bullet per commit
+            ENTRIES=$(git log "${PREV_TAG}..HEAD" --pretty=format:"* %s" --no-merges)
+          else
+            echo "No previous tag found, generating changelog from all commits"
+            ENTRIES=$(git log --pretty=format:"* %s" --no-merges)
+          fi
+
+          if [ -z "$ENTRIES" ]; then
+            ENTRIES="* Version bump to ${VERSION}"
+          fi
+
+          # Prepend new section to CHANGELOG.md
+          CHANGELOG_NEW=$(printf '%s\n%s\n' "$HEADER" "$ENTRIES")
+
+          if [ -f CHANGELOG.md ]; then
+            # Insert after the first line (# ChangeLog header) or at the top
+            EXISTING=$(cat CHANGELOG.md)
+            if echo "$EXISTING" | head -1 | grep -qi "^# ChangeLog"; then
+              # Keep the top-level header, insert new version section after it
+              FIRST_LINE=$(head -1 CHANGELOG.md)
+              REST=$(tail -n +2 CHANGELOG.md)
+              printf '%s\n\n%s\n%s' "$FIRST_LINE" "$CHANGELOG_NEW" "$REST" > CHANGELOG.md
+            else
+              printf '%s\n\n%s' "$CHANGELOG_NEW" "$EXISTING" > CHANGELOG.md
+            fi
+          else
+            printf '# ChangeLog\n\n%s\n' "$CHANGELOG_NEW" > CHANGELOG.md
+          fi
+
+          npm install
+          git add -A
+          git commit -m "chore: update dependencies and changelog${RELEASE_TAG}" || true
+          git checkout -b "bump-version-${VERSION}"
+          git push --set-upstream origin "bump-version-${VERSION}"
+
+      - name: Create Pull Request
+        id: create-pr
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT_GITHUB || secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const fs = require('fs');
+
+            // Read and parse package.json with error handling
+            let packageJson;
+            try {
+              const packageContent = fs.readFileSync('./package.json', 'utf8');
+              packageJson = JSON.parse(packageContent);
+            } catch (error) {
+              core.setFailed(`Failed to read package.json: ${error.message}`);
+              return;
+            }
+
+            const version = packageJson.version;
+            const branchName = `bump-version-${version}`;
+            const releaseType = '${{ inputs.release_type }}';
+
+            // Add release type info to PR title if specified
+            let title = `feat: Bump version to ${version}`;
+            if (releaseType !== 'none') {
+              title += ` [${releaseType}]`;
+            }
+
+            const pr = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: title,
+              head: branchName,
+              base: 'develop',
+              body: releaseType !== 'none'
+                ? `This version bump will automatically create a ${releaseType} PR after merge.`
+                : ''
+            });
+            core.setOutput('pr_number', pr.data.number);
+
+            // Enable auto-merge with SQUASH method
+            try {
+              await github.graphql(`
+                mutation($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+                  enablePullRequestAutoMerge(input: {
+                    pullRequestId: $pullRequestId,
+                    mergeMethod: $mergeMethod
+                  }) {
+                    pullRequest {
+                      id
+                    }
+                  }
+                }
+              `, {
+                pullRequestId: pr.data.node_id,
+                mergeMethod: 'SQUASH'
+              });
+
+              console.log(`PR #${pr.data.number} created with auto-merge enabled (SQUASH method)`);
+            } catch (error) {
+              console.error(`Failed to enable auto-merge: ${error.message}`);
+              core.warning(`Auto-merge could not be enabled. Please merge manually.`);
+            }
