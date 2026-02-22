@@ -6,7 +6,7 @@
 #
 # The version number is managed by the bump-version.yml workflow.
 
-name: Release VS Code Extension
+name: "Auto: Release VS Code Extension"
 
 on:
   push:
