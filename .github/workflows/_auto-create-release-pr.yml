@@ -13,7 +13,7 @@
 # This workflow works in conjunction with bump-version.yml to provide a streamlined
 # release process.
 
-name: Merge to Release Branch
+name: "Auto: Merge to Release Branch"
 
 on:
   pull_request:

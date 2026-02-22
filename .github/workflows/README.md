@@ -24,7 +24,7 @@ requires only one manual action.
      - Creates a PR to `develop` branch with auto-merge enabled (SQUASH)
      - Tags the PR title with `[release]` or `[prerelease]` if specified
 
-2. **`auto-create-release-pr.yml`** - Automatic workflow triggered when version is bumped
+2. **`_auto-create-release-pr.yml`** - Automatic workflow triggered when version is bumped (prefixed with `_` to indicate it runs automatically)
 
    - **Trigger:** PR merged to `develop` branch, or manual `workflow_dispatch`
    - **Actions:**
@@ -33,7 +33,7 @@ requires only one manual action.
      - No PRs, no squash, no merge commits — a straight rebase
      - Skips if no release tag is found
 
-3. **`release.yml`** - Automatic workflow for publishing the extension
+3. **`_release.yml`** - Automatic workflow for publishing the extension (prefixed with `_` to indicate it runs automatically)
 
    - **Trigger:** Push to `main` or `pre-release` branches
    - **Actions:**
@@ -89,10 +89,10 @@ requires only one manual action.
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### CI Workflow
+### Build Workflow
 
-- **`main.yaml`** - Continuous integration (build & lint)
-  - **Trigger:** Push or PR to `master`, `develop`, or `main` branches
+- **`build.yaml`** - Continuous integration (build & lint)
+  - **Trigger:** Push or PR to `develop`, or manual `workflow_dispatch` (any branch)
   - **Actions:** Installs dependencies, lints, builds, and packages the VSIX
 
 ## Required Secrets

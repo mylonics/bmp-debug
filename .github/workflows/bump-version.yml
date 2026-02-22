@@ -58,7 +58,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Bump version and push changes
         run: |
@@ -71,50 +71,18 @@ jobs:
             RELEASE_TAG=" [${{ inputs.release_type }}]"
           fi
 
-          # Use npm version with custom message to include release tag
+          # npm version runs the "version" script in package.json which:
+          #   1. Runs auto-changelog to generate CHANGELOG.md
+          #   2. Stages CHANGELOG.md via git add
+          # Then npm version commits everything (package.json + CHANGELOG.md) and tags
           npm version ${{ inputs.bump_type }} -m "%s${RELEASE_TAG}"
-          VERSION=$(jq -r '.version' package.json)
 
-          # --- Auto-generate CHANGELOG entry from git history ---
-          # Find the previous version tag (most recent tag matching vX.Y.Z)
-          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-
-          HEADER="# V${VERSION}"
-
-          if [ -n "$PREV_TAG" ]; then
-            echo "Generating changelog from ${PREV_TAG}..HEAD"
-            # Collect commit subjects since last tag, one bullet per commit
-            ENTRIES=$(git log "${PREV_TAG}..HEAD" --pretty=format:"* %s" --no-merges)
-          else
-            echo "No previous tag found, generating changelog from all commits"
-            ENTRIES=$(git log --pretty=format:"* %s" --no-merges)
-          fi
-
-          if [ -z "$ENTRIES" ]; then
-            ENTRIES="* Version bump to ${VERSION}"
-          fi
-
-          # Prepend new section to CHANGELOG.md
-          CHANGELOG_NEW=$(printf '%s\n%s\n' "$HEADER" "$ENTRIES")
-
-          if [ -f CHANGELOG.md ]; then
-            # Insert after the first line (# ChangeLog header) or at the top
-            EXISTING=$(cat CHANGELOG.md)
-            if echo "$EXISTING" | head -1 | grep -qi "^# ChangeLog"; then
-              # Keep the top-level header, insert new version section after it
-              FIRST_LINE=$(head -1 CHANGELOG.md)
-              REST=$(tail -n +2 CHANGELOG.md)
-              printf '%s\n\n%s\n%s' "$FIRST_LINE" "$CHANGELOG_NEW" "$REST" > CHANGELOG.md
-            else
-              printf '%s\n\n%s' "$CHANGELOG_NEW" "$EXISTING" > CHANGELOG.md
-            fi
-          else
-            printf '# ChangeLog\n\n%s\n' "$CHANGELOG_NEW" > CHANGELOG.md
-          fi
-
+          # Update lockfile after version bump
           npm install
           git add -A
-          git commit -m "chore: update dependencies and changelog${RELEASE_TAG}" || true
+          git commit -m "chore: update dependencies${RELEASE_TAG}" || true
+
+          VERSION=$(jq -r '.version' package.json)
           git checkout -b "bump-version-${VERSION}"
           git push --set-upstream origin "bump-version-${VERSION}"
 

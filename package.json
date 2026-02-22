@@ -2778,6 +2778,7 @@
         "test-compile": "tsc -p ./",
         "package": "node ./release.js --package",
         "publish": "node ./release.js --publish --vsx-also",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "version": "npx auto-changelog -p && git add CHANGELOG.md"
     }
 }
