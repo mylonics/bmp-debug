@@ -101,21 +101,6 @@ The extension needs `arm-none-eabi-gdb` (with Python support) to communicate wit
 3. **VS Code settings** — the `bmp-debug.gdbPath` or `bmp-debug.armToolchainPath` settings apply globally (with per-platform variants `.linux`, `.osx`, `.windows`).
 4. **System PATH** — if none of the above are set, the extension looks for `arm-none-eabi-gdb` on your system `PATH`.
 
-#### Example: Using `gdbPath` in launch.json
-
-```json
-{
-    "name": "Debug with BMP",
-    "cwd": "${workspaceFolder}",
-    "executable": "./build/zephyr/zephyr.elf",
-    "request": "launch",
-    "type": "bmp-debug",
-    "interface": "swd",
-    "runToEntryPoint": "main",
-    "rtos": "zephyr",
-    "gdbPath": "C:/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb.exe"
-}
-```
 
 #### Example: Using `armToolchainPath` in launch.json
 
@@ -130,6 +115,7 @@ The extension needs `arm-none-eabi-gdb` (with Python support) to communicate wit
     "runToEntryPoint": "main",
     "rtos": "zephyr",
     "armToolchainPath": "C:/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin"
+    //"gdbPath": "C:/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb.exe"
 }
 ```
 
@@ -143,17 +129,8 @@ In your `.vscode/settings.json` or user settings:
 }
 ```
 
-Or with per-platform overrides:
 
-```json
-{
-    "bmp-debug.gdbPath.linux": "/opt/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
-    "bmp-debug.gdbPath.windows": "C:/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb.exe",
-    "bmp-debug.gdbPath.osx": "/opt/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
-}
-```
-
-### Getting a Compatible GDB from the Zephyr SDK
+### Getting a Compatible GDB for python based RTOS thread awareness
 
 The [Zephyr SDK](https://github.com/zephyrproject-rtos/sdk-ng/releases) ships a build of `arm-zephyr-eabi-gdb` that includes **Python support** and is the easiest way to get a compatible GDB.
 
