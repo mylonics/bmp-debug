@@ -2766,7 +2766,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Marus/bmp-debug.git"
+        "url": "https://github.com/mylonics/bmp-debug.git"
     },
     "bugs": {
         "url": "https://github.com/mylonics/bmp-debug/issues"

@@ -38,11 +38,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # Step 4: Build the extension using webpack (as defined in vscode:prepublish).
-      - name: Build Extension
-        run: npm run lint && webpack --mode production && node dist/docgen.js && npm ci -C binary_modules --omit dev && cp -a binary_modules/node_modules dist/
-
-      # Step 5: Package the extension as VSIX.
+      # Step 4: Package the extension (vsce package runs vscode:prepublish automatically).
       - name: Package Extension
         run: npx vsce package
 

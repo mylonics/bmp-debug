@@ -92,19 +92,126 @@ The RTT terminal is bidirectional — you can both view output and send input. I
 }
 ```
 
+### Specifying the GDB Executable
+
+The extension needs `arm-none-eabi-gdb` (with Python support) to communicate with the Black Magic Probe. There are several ways to configure which GDB binary is used, listed in order of precedence:
+
+1. **`gdbPath` in launch.json** — overrides everything for that launch configuration. Can be a full path or just the executable name if it is on your `PATH`.
+2. **`armToolchainPath` in launch.json** — sets the directory containing the toolchain binaries. The extension appends `arm-none-eabi-gdb` (or the configured prefix) automatically.
+3. **VS Code settings** — the `bmp-debug.gdbPath` or `bmp-debug.armToolchainPath` settings apply globally (with per-platform variants `.linux`, `.osx`, `.windows`).
+4. **System PATH** — if none of the above are set, the extension looks for `arm-none-eabi-gdb` on your system `PATH`.
+
+#### Example: Using `gdbPath` in launch.json
+
+```json
+{
+    "name": "Debug with BMP",
+    "cwd": "${workspaceFolder}",
+    "executable": "./build/zephyr/zephyr.elf",
+    "request": "launch",
+    "type": "bmp-debug",
+    "interface": "swd",
+    "runToEntryPoint": "main",
+    "rtos": "zephyr",
+    "gdbPath": "C:/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb.exe"
+}
+```
+
+#### Example: Using `armToolchainPath` in launch.json
+
+```json
+{
+    "name": "Debug with BMP",
+    "cwd": "${workspaceFolder}",
+    "executable": "./build/zephyr/zephyr.elf",
+    "request": "launch",
+    "type": "bmp-debug",
+    "interface": "swd",
+    "runToEntryPoint": "main",
+    "rtos": "zephyr",
+    "armToolchainPath": "C:/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin"
+}
+```
+
+#### Example: Using VS Code settings
+
+In your `.vscode/settings.json` or user settings:
+
+```json
+{
+    "bmp-debug.gdbPath": "/opt/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+}
+```
+
+Or with per-platform overrides:
+
+```json
+{
+    "bmp-debug.gdbPath.linux": "/opt/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+    "bmp-debug.gdbPath.windows": "C:/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb.exe",
+    "bmp-debug.gdbPath.osx": "/opt/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+}
+```
+
+### Getting a Compatible GDB from the Zephyr SDK
+
+The [Zephyr SDK](https://github.com/zephyrproject-rtos/sdk-ng/releases) ships a build of `arm-zephyr-eabi-gdb` that includes **Python support** and is the easiest way to get a compatible GDB.
+
+1. **Download the Zephyr SDK** from the [releases page](https://github.com/zephyrproject-rtos/sdk-ng/releases). You can install the full SDK or just the ARM toolchain:
+
+   ```bash
+   # Full SDK (includes all toolchains)
+   wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/zephyr-sdk-0.17.0_linux-x86_64.tar.xz
+   tar xf zephyr-sdk-0.17.0_linux-x86_64.tar.xz
+
+   # Or minimal — ARM toolchain only
+   wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz
+   tar xf toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz
+   ```
+
+   On Windows, download the `.7z` or installer variant and extract/install to a directory such as `C:\zephyr-sdk-0.17.0`.
+
+2. **Locate the GDB binary** inside the extracted SDK:
+
+   | OS | Path |
+   |---|---|
+   | Linux | `<sdk>/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb` |
+   | macOS | `<sdk>/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb` |
+   | Windows | `<sdk>\arm-zephyr-eabi\bin\arm-zephyr-eabi-gdb.exe` |
+
+3. **Configure the extension** using one of the methods above. Since the Zephyr SDK uses the prefix `arm-zephyr-eabi` instead of the default `arm-none-eabi`, the simplest approach is to set `gdbPath` directly:
+
+   ```json
+   {
+       "bmp-debug.gdbPath": "<sdk>/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+   }
+   ```
+
+   Alternatively, set both `armToolchainPath` and `armToolchainPrefix`:
+
+   ```json
+   {
+       "bmp-debug.armToolchainPath": "<sdk>/arm-zephyr-eabi/bin",
+       "bmp-debug.armToolchainPrefix": "arm-zephyr-eabi"
+   }
+   ```
+
+> **Note:** The Zephyr SDK GDB requires the Python version it was compiled against to be installed on your system. If you get errors about missing Python libraries, install the matching Python version (check with `arm-zephyr-eabi-gdb --configuration` and look for the Python path).
+
 ### Key launch.json Properties
 
 | Property | Description |
 |---|---|
 | `servertype` | GDB server type: `"bmp"` (default), `"qemu"`, or `"external"` |
 | `port` | Serial port for BMP GDB server. Auto-detected if omitted |
-| `BMPGDBSerialPort` | **Deprecated** — use `port` instead |
 | `interface` | Debug interface: `"swd"` (default) or `"jtag"` |
 | `targetId` | Target ID for BMP scan (default: `1`) |
 | `powerOverBMP` | Power target via BMP: `"enable"`, `"disable"`, or `"lastState"` (default) |
 | `rtos` | RTOS type for thread awareness. Currently only `"zephyr"` is supported |
 | `rttEnabled` | Enable RTT over BMP serial. Opens the UART port in a terminal panel and sends `monitor rtt enable` |
 | `runToEntryPoint` | Function name to run to on launch (e.g., `"main"`) |
+| `gdbPath` | Full path or name of the GDB executable to use (overrides `armToolchainPath`) |
+| `armToolchainPath` | Path to the directory containing the ARM toolchain binaries |
 
 For a full list of properties, see [debug_attributes.md](debug_attributes.md).
 
