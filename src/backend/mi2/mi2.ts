@@ -1179,8 +1179,32 @@ export class MI2 extends EventEmitter implements IBackend {
                             // Pre-select failure is non-fatal
                         }
                     }
-                    const result = await this.sendOneCommand(obj);
-                    obj.resolve(result);
+                    try {
+                        const result = await this.sendOneCommand(obj);
+                        obj.resolve(result);
+                    } catch (cmdErr) {
+                        obj.reject(cmdErr);
+                    } finally {
+                        // Always restore CPU register context after a thread pre-select
+                        // so that hardware registers are correct before execution resumes.
+                        // Without this, set $sp/$pc from override-thread-select persists
+                        // into the next exec-continue, causing the CPU to run from the
+                        // wrong address and breaking pause/breakpoints.
+                        if (overrideResult.preSelectThread !== undefined) {
+                            try {
+                                await this.sendOneCommand({
+                                    command: 'override-restore-thread-context',
+                                    suppressFailure: true,
+                                    swallowStdout: false,
+                                    forceNoDebug: false,
+                                    resolve: () => {},
+                                    reject: () => {}
+                                });
+                            } catch (e) {
+                                // Restore failure is non-fatal
+                            }
+                        }
+                    }
                 } catch (e) {
                     obj.reject(e);
                 }
