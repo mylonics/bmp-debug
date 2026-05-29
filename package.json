@@ -1,5 +1,5 @@
 {
-    "version": "0.0.2",
+    "version": "0.0.3",
     "preview": false,
     "activationEvents": [
         "onDebugResolve:bmp-debug",
@@ -440,7 +440,11 @@
                                 "default": null,
                                 "description": "Controls how Zephyr RTOS threads are enumerated when 'rtos' is 'zephyr'. 'native' uses the debug probe's own RTOS thread list (fastest; requires probe firmware with Zephyr RTOS support, e.g. BMP). 'kernel' walks _kernel.threads directly (any probe; requires CONFIG_THREAD_MONITOR=y). 'auto' tries native first then falls back to kernel. Default: 'native' for servertype 'bmp', 'auto' for all others.",
                                 "type": "string",
-                                "enum": ["native", "kernel", "auto"]
+                                "enum": [
+                                    "native",
+                                    "kernel",
+                                    "auto"
+                                ]
                             },
                             "armToolchainPath": {
                                 "default": null,
@@ -1558,7 +1562,11 @@
                                 "default": null,
                                 "description": "Controls how Zephyr RTOS threads are enumerated when 'rtos' is 'zephyr'. 'native' uses the debug probe's own RTOS thread list (fastest; requires probe firmware with Zephyr RTOS support, e.g. BMP). 'kernel' walks _kernel.threads directly (any probe; requires CONFIG_THREAD_MONITOR=y). 'auto' tries native first then falls back to kernel. Default: 'native' for servertype 'bmp', 'auto' for all others.",
                                 "type": "string",
-                                "enum": ["native", "kernel", "auto"]
+                                "enum": [
+                                    "native",
+                                    "kernel",
+                                    "auto"
+                                ]
                             },
                             "armToolchainPath": {
                                 "default": null,
