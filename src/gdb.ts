@@ -1074,9 +1074,11 @@ export class GDBDebugSession extends LoggingDebugSession {
             this.gdbInitCommands.push(
                 `interpreter-exec console "source ${this.args.extensionPath}/support/zephyr-gdb/zephyr_gdb.py"`
             );
-            // Default: 'native' for BMP (probe manages the thread list, fastest path),
-            // 'auto' (native → kernel fallback) for all other server types.
-            const threadSource = this.args.rtosThreadDiscovery || (this.args.servertype === 'bmp' ? 'native' : 'auto');
+            // Default: 'auto' (tries BMP RTOS thread list first, falls back to kernel walk
+            // if the probe has no RTOS support or exposes only a single unnamed thread).
+            // Users with confirmed BMP Zephyr RTOS support can set 'native' explicitly
+            // via rtosThreadDiscovery to skip the kernel-walk fallback.
+            const threadSource = this.args.rtosThreadDiscovery || 'auto';
             this.gdbInitCommands.push(
                 `interpreter-exec console "zephyr-thread-source ${threadSource}"`
             );
