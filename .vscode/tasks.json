@@ -4,6 +4,14 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "compile",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run-script", "compile"],
+            "group": "build",
+            "problemMatcher": "$tsc"
+        },
+        {
             "label": "test-compile",
             "type": "shell",
             "command": "npm",

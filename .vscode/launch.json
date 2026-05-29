@@ -12,7 +12,8 @@
 			"sourceMaps": true,
 			"outFiles": [
 				"${workspaceRoot}/dist/*.js"
-			]
+			],
+			"preLaunchTask": "compile"
 		},
 		{
 			"name": "Debug Server",

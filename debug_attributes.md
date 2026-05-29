@@ -58,6 +58,7 @@ If the type is marked as `{...}` it means that it is a complex item can have mul
 | preLaunchCommands | string[] | Launch | Additional GDB Commands to be executed at the start of the main launch sequence (immediately after attaching to target). |
 | preResetCommands | string[] | Both | Additional GDB Commands to be executed at the start of the reset sequence. When undefined the deprecated preRestartCommands is used. |
 | rtos | string | Both | RTOS being used. Currently only "zephyr" is supported. When set to "zephyr", the extension will automatically source zephyr_gdb.py and enable MI command overrides for RTOS thread awareness. |
+| rtosThreadDiscovery | string | Both | Controls how Zephyr RTOS threads are enumerated when 'rtos' is 'zephyr'. 'native' uses the debug probe's own RTOS thread list (fastest; requires probe firmware with Zephyr RTOS support, e.g. BMP). 'kernel' walks _kernel.threads directly (any probe; requires CONFIG_THREAD_MONITOR=y). 'auto' tries native first then falls back to kernel. Default: 'native' for servertype 'bmp', 'auto' for all others. |
 | rttConfig | object | Both | SEGGER's Real Time Trace (RTT) and supported by JLink, OpenOCD and perhaps others in the future |
 | rttConfig<br>.address | string | Both | Address to start searching for the RTT control block. Use "auto" for BMP-Debug to use the address from elf file |
 | rttConfig<br>.clearSearch | boolean | Both | When true, clears the search-string. Only applicable when address is "auto" |
