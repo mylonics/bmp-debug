@@ -1076,8 +1076,7 @@ export class GDBDebugSession extends LoggingDebugSession {
             );
             // Default: 'native' for BMP (probe manages the thread list, fastest path),
             // 'auto' (native → kernel fallback) for all other server types.
-            const threadSource = this.args.rtosThreadDiscovery ||
-                (this.args.servertype === 'bmp' ? 'native' : 'auto');
+            const threadSource = this.args.rtosThreadDiscovery || (this.args.servertype === 'bmp' ? 'native' : 'auto');
             this.gdbInitCommands.push(
                 `interpreter-exec console "zephyr-thread-source ${threadSource}"`
             );
