@@ -442,7 +442,7 @@ export class MI2 extends EventEmitter implements IBackend {
             // program is in paused state
             try {
                 startKillTimeout(500);
-                await new Promise(() => setTimeout(() => {}, 50));          // For some people delay was needed. Doesn't hurt I guess
+                await new Promise((res) => setTimeout(res, 50));          // For some people delay was needed. Doesn't hurt I guess
                 if (!this.exited) {
                     await this.sendCommand('target-disconnect');            // Yes, this can fail
                 }

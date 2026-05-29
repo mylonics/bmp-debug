@@ -1074,6 +1074,13 @@ export class GDBDebugSession extends LoggingDebugSession {
             this.gdbInitCommands.push(
                 `interpreter-exec console "source ${this.args.extensionPath}/support/zephyr-gdb/zephyr_gdb.py"`
             );
+            // Default: 'native' for BMP (probe manages the thread list, fastest path),
+            // 'auto' (native → kernel fallback) for all other server types.
+            const threadSource = this.args.rtosThreadDiscovery ||
+                (this.args.servertype === 'bmp' ? 'native' : 'auto');
+            this.gdbInitCommands.push(
+                `interpreter-exec console "zephyr-thread-source ${threadSource}"`
+            );
         }
 
         const loadFiles = this.args.loadFiles;
@@ -1697,7 +1704,7 @@ export class GDBDebugSession extends LoggingDebugSession {
                             this.handleMsg('log', 'GDB commands overridePreEndSessionCommands failed ' + (e ? e.toString() : 'Unknown error') + '\n');
                         }
                     }
-                    await new Promise(() => setTimeout(() => {}, 5));
+                    await new Promise((res) => setTimeout(res, 5));
                 }
                 this.waitForServerExitAndRespond(response);     // Will wait asynchronously until the following actions are done
                 if (args.terminateDebuggee || args.suspendDebuggee) {

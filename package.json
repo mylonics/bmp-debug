@@ -436,6 +436,12 @@
                                     "zephyr"
                                 ]
                             },
+                            "rtosThreadDiscovery": {
+                                "default": null,
+                                "description": "Controls how Zephyr RTOS threads are enumerated when 'rtos' is 'zephyr'. 'native' uses the debug probe's own RTOS thread list (fastest; requires probe firmware with Zephyr RTOS support, e.g. BMP). 'kernel' walks _kernel.threads directly (any probe; requires CONFIG_THREAD_MONITOR=y). 'auto' tries native first then falls back to kernel. Default: 'native' for servertype 'bmp', 'auto' for all others.",
+                                "type": "string",
+                                "enum": ["native", "kernel", "auto"]
+                            },
                             "armToolchainPath": {
                                 "default": null,
                                 "description": "This setting can be used to override the armToolchainPath user setting for a particular launch configuration. This should be the path where arm-none-eabi-gdb, arm-none-eabi-objdump and arm-none-eabi-nm are located.",
@@ -1547,6 +1553,12 @@
                                 "enum": [
                                     "zephyr"
                                 ]
+                            },
+                            "rtosThreadDiscovery": {
+                                "default": null,
+                                "description": "Controls how Zephyr RTOS threads are enumerated when 'rtos' is 'zephyr'. 'native' uses the debug probe's own RTOS thread list (fastest; requires probe firmware with Zephyr RTOS support, e.g. BMP). 'kernel' walks _kernel.threads directly (any probe; requires CONFIG_THREAD_MONITOR=y). 'auto' tries native first then falls back to kernel. Default: 'native' for servertype 'bmp', 'auto' for all others.",
+                                "type": "string",
+                                "enum": ["native", "kernel", "auto"]
                             },
                             "armToolchainPath": {
                                 "default": null,
