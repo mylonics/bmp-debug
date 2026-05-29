@@ -1072,7 +1072,7 @@ export class GDBDebugSession extends LoggingDebugSession {
         // Auto-source zephyr_gdb.py when rtos is set to zephyr
         if (this.args.rtos === 'zephyr') {
             this.gdbInitCommands.push(
-                `interpreter-exec console "source ${this.args.extensionPath}/support/zephyr_gdb.py"`
+                `interpreter-exec console "source ${this.args.extensionPath}/support/zephyr-gdb/zephyr_gdb.py"`
             );
         }
 
