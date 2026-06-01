@@ -273,6 +273,8 @@ export interface ConfigurationArguments extends DebugProtocol.LaunchRequestArgum
     gdbPath: string;
     gdbServerConsolePort: number;
     gdbInterruptMode: GDBInterruptMode;
+    pythonPath: string;
+    pythonHome: string;
     objdumpPath: string;
     serverArgs: string[];
     serverCwd: string;

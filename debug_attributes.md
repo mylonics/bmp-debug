@@ -57,6 +57,8 @@ If the type is marked as `{...}` it means that it is a complex item can have mul
 | preAttachCommands | string[] | Attach | Additional GDB Commands to be executed at the start of the main attach sequence (immediately after attaching to target). |
 | preLaunchCommands | string[] | Launch | Additional GDB Commands to be executed at the start of the main launch sequence (immediately after attaching to target). |
 | preResetCommands | string[] | Both | Additional GDB Commands to be executed at the start of the reset sequence. When undefined the deprecated preRestartCommands is used. |
+| pythonHome | string | Both | Optional Python home directory to force for GDB's embedded Python runtime. When omitted and pythonPath is set, bmp-debug derives PYTHONHOME from pythonPath. |
+| pythonPath | string | Both | Optional path to the Python executable to use for GDB's embedded Python runtime. Useful when GDB should use a virtual environment Python instead of the system Python. |
 | rtos | string | Both | RTOS being used. Currently only "zephyr" is supported. When set to "zephyr", the extension will automatically source zephyr_gdb.py and enable MI command overrides for RTOS thread awareness. |
 | rtosThreadDiscovery | string | Both | Controls how Zephyr RTOS threads are enumerated when 'rtos' is 'zephyr'. 'native' uses the debug probe's own RTOS thread list (fastest; requires probe firmware with Zephyr RTOS support, e.g. BMP). 'kernel' walks _kernel.threads directly (any probe; requires CONFIG_THREAD_MONITOR=y). 'auto' tries native first then falls back to kernel. Default: 'native' for servertype 'bmp', 'auto' for all others. |
 | rttConfig | object | Both | SEGGER's Real Time Trace (RTT) and supported by JLink, OpenOCD and perhaps others in the future |

@@ -105,6 +105,70 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the GDB executable. This is useful for cases where your gdb executable doesn't follow the standard <tuple>-gdb format - for example `gdb-multiarch`. This can be just the executable name (if on the system path) or the full path."
                     },
+                    "bmp-debug.pythonPath.linux": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the Python executable to use for GDB's embedded Python runtime. This can be used to prefer a venv Python over system Python."
+                    },
+                    "bmp-debug.pythonPath.osx": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the Python executable to use for GDB's embedded Python runtime. This can be used to prefer a venv Python over system Python."
+                    },
+                    "bmp-debug.pythonPath.windows": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the Python executable to use for GDB's embedded Python runtime. This can be used to prefer a venv Python over system Python."
+                    },
+                    "bmp-debug.pythonPath": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the Python executable to use for GDB's embedded Python runtime. This can be used to prefer a venv Python over system Python."
+                    },
+                    "bmp-debug.pythonHome.linux": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional Python home directory for GDB's embedded Python runtime. When set, PYTHONHOME is forced to this value for the GDB process."
+                    },
+                    "bmp-debug.pythonHome.osx": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional Python home directory for GDB's embedded Python runtime. When set, PYTHONHOME is forced to this value for the GDB process."
+                    },
+                    "bmp-debug.pythonHome.windows": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional Python home directory for GDB's embedded Python runtime. When set, PYTHONHOME is forced to this value for the GDB process."
+                    },
+                    "bmp-debug.pythonHome": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional Python home directory for GDB's embedded Python runtime. When set, PYTHONHOME is forced to this value for the GDB process."
+                    },
                     "bmp-debug.objdumpPath.linux": {
                         "type": [
                             "string",
@@ -464,6 +528,16 @@
                             "gdbPath": {
                                 "default": null,
                                 "description": "This setting can be used to override the GDB path user/workspace setting for a particular launch configuration. This should be the full pathname to the executable (or name of the executable if it is in your PATH). Note that other toolchain executables with the configured prefix must still be available.",
+                                "type": "string"
+                            },
+                            "pythonPath": {
+                                "default": null,
+                                "description": "Optional path to the Python executable to use for GDB's embedded Python runtime. Useful when GDB should use a virtual environment Python instead of the system Python.",
+                                "type": "string"
+                            },
+                            "pythonHome": {
+                                "default": null,
+                                "description": "Optional Python home directory to force for GDB's embedded Python runtime. When omitted and pythonPath is set, bmp-debug derives PYTHONHOME from pythonPath.",
                                 "type": "string"
                             },
                             "objdumpPath": {
@@ -1586,6 +1660,16 @@
                             "gdbPath": {
                                 "default": null,
                                 "description": "This setting can be used to override the GDB path user/workspace setting for a particular launch configuration. This should be the full pathname to the executable (or name of the executable if it is in your PATH). Note that other toolchain executables with the configured prefix must still be available.",
+                                "type": "string"
+                            },
+                            "pythonPath": {
+                                "default": null,
+                                "description": "Optional path to the Python executable to use for GDB's embedded Python runtime. Useful when GDB should use a virtual environment Python instead of the system Python.",
+                                "type": "string"
+                            },
+                            "pythonHome": {
+                                "default": null,
+                                "description": "Optional Python home directory to force for GDB's embedded Python runtime. When omitted and pythonPath is set, bmp-debug derives PYTHONHOME from pythonPath.",
                                 "type": "string"
                             },
                             "objdumpPath": {

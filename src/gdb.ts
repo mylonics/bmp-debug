@@ -1032,6 +1032,40 @@ export class GDBDebugSession extends LoggingDebugSession {
         return gdbExePath;
     }
 
+    private inferPythonHomeFromExecutable(pythonPath: string): string {
+        const pythonDir = path.dirname(pythonPath);
+        const pythonDirBase = path.basename(pythonDir).toLowerCase();
+        if ((pythonDirBase === 'bin') || (pythonDirBase === 'scripts')) {
+            return path.dirname(pythonDir);
+        }
+        return pythonDir;
+    }
+
+    private getGdbProcessEnv(): NodeJS.ProcessEnv {
+        if (!this.args.pythonPath && !this.args.pythonHome) {
+            return undefined;
+        }
+
+        const env: NodeJS.ProcessEnv = { ...process.env };
+        if (this.args.pythonPath) {
+            env.PYTHONEXECUTABLE = this.args.pythonPath;
+
+            const pythonDir = path.dirname(this.args.pythonPath);
+            const pathSep = (os.platform() === 'win32') ? ';' : ':';
+            env.PATH = env.PATH ? `${pythonDir}${pathSep}${env.PATH}` : pythonDir;
+
+            if (!this.args.pythonHome) {
+                env.PYTHONHOME = this.inferPythonHomeFromExecutable(this.args.pythonPath);
+            }
+        }
+
+        if (this.args.pythonHome) {
+            env.PYTHONHOME = this.args.pythonHome;
+        }
+
+        return env;
+    }
+
     private gdbInitCommands: string[] = [];
     private symInitCommands: string[] = [];
     private startGdb(response: DebugProtocol.LaunchResponse): Promise<void> {
@@ -1049,6 +1083,7 @@ export class GDBDebugSession extends LoggingDebugSession {
         }
 
         this.miDebugger = new MI2(gdbExePath, gdbargs);
+        this.miDebugger.procEnv = this.getGdbProcessEnv();
         this.miDebugger.debugOutput = this.args.showDevDebugOutput;
         this.miDebugger.overrideMICommands = !!this.args.rtos;
         if (this.args.gdbInterruptMode) {
@@ -1129,6 +1164,7 @@ export class GDBDebugSession extends LoggingDebugSession {
 
     public startGdbForLiveWatch(liveGdb: LiveWatchMonitor): Promise<void> {
         const mi2 = new MI2(this.miDebugger.application, this.miDebugger.args, true);
+        mi2.procEnv = this.miDebugger.procEnv;
         liveGdb.setupEvents(mi2);
         const commands = [...this.gdbInitCommands];
         mi2.debugOutput = this.args.showDevDebugOutput;
