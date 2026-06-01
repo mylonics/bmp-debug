@@ -148,6 +148,7 @@ export class SymbolTable {
     private nmPromises: ExecPromise[] = [];
 
     private objdumpPath: string;
+    private nmPath: string;
 
     constructor(private gdbSession: GDBDebugSession, private executables: SymbolFile[]) {
         const args = this.gdbSession.args;
@@ -163,6 +164,10 @@ export class SymbolTable {
         }
         if (this.objdumpPath) {
             this.objdumpPath = this.objdumpPath.replace(/\\/g, '/');
+        }
+        this.nmPath = args.nmPath || replaceProgInPath(this.objdumpPath, /objdump/i, 'nm') || this.objdumpPath;
+        if (this.nmPath) {
+            this.nmPath = this.nmPath.replace(/\\/g, '/');
         }
     }
 
@@ -416,7 +421,6 @@ export class SymbolTable {
                     // eslint-disable-next-line no-constant-condition
                     if (true) {
                         const nmStart = Date.now();
-                        const nmProg = replaceProgInPath(this.objdumpPath, /objdump/i, 'nm');
                         const nmArgs = [
                             '--defined-only',
                             '-S',   // Want size as well
@@ -430,7 +434,7 @@ export class SymbolTable {
                         cxt.setCallback(this.readNmSymbolLine.bind(this, cxt, symbolFile));
                         cxt.reader.on('error', (e) => {
                             // eslint-disable-next-line @stylistic/max-len
-                            this.gdbSession.handleMsg('log', `Error: ${nmProg} failed! statics/global/functions may not be properly classified: ${e.toString()}\n`);
+                            this.gdbSession.handleMsg('log', `Error: ${this.nmPath} failed! statics/global/functions may not be properly classified: ${e.toString()}\n`);
                             this.gdbSession.handleMsg('log', '    Expecting `nm` next to `objdump`. If that is not the problem please report this.\n');
                             this.nmPromises = [];
                         });
@@ -447,12 +451,12 @@ export class SymbolTable {
                         });
 
                         if (trace || this.gdbSession.args.showDevDebugOutput) {
-                            this.gdbSession.handleMsg('log', `Reading symbols from ${nmProg} ${nmArgs.join(' ')}\n`);
+                            this.gdbSession.handleMsg('log', `Reading symbols from ${this.nmPath} ${nmArgs.join(' ')}\n`);
                         }
                         this.nmPromises.push({
-                            args: [nmProg, ...nmArgs],
+                            args: [this.nmPath, ...nmArgs],
                             promise: cxt.reader.startWithProgram(
-                                nmProg, nmArgs, spawnOpts, cxt.getCallback()),
+                                this.nmPath, nmArgs, spawnOpts, cxt.getCallback()),
                         });
                     }
                 } catch (e) {

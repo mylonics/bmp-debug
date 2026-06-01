@@ -169,6 +169,7 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         this.setOsSpecficConfigSetting(config, 'pythonPath');
         this.setOsSpecficConfigSetting(config, 'pythonHome');
         this.setOsSpecficConfigSetting(config, 'objdumpPath');
+        this.setOsSpecficConfigSetting(config, 'nmPath');
         config.extensionPath = this.context.extensionPath;
         if (os.platform() === 'win32') {
             config.extensionPath = config.extensionPath.replace(/\\/g, '/'); // GDB doesn't interpret the path correctly with backslashes.

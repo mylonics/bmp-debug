@@ -201,6 +201,38 @@
                         "default": null,
                         "description": "This setting allows you to completely override the path/executable for the objdump executable. This is useful for cases where your objdump executable doesn't follow the standard <tuple>-objdump format - for example `objdump-multiarch`. This can be just the executable name (if on the system path) or the full path. The program 'nm' is also expected alongside"
                     },
+                    "bmp-debug.nmPath.linux": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the nm executable. If not set, nm is derived from the objdump path."
+                    },
+                    "bmp-debug.nmPath.osx": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the nm executable. If not set, nm is derived from the objdump path."
+                    },
+                    "bmp-debug.nmPath.windows": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the nm executable. If not set, nm is derived from the objdump path."
+                    },
+                    "bmp-debug.nmPath": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Optional path to the nm executable. If not set, nm is derived from the objdump path."
+                    },
                     "bmp-debug.internalDebugOptions": {
                         "description": "Internal debug options to debug this extension. These options must ideally be selected before you start VSCode",
                         "type": "object",
@@ -543,6 +575,11 @@
                             "objdumpPath": {
                                 "default": null,
                                 "description": "This setting can be used to override the objdump (used to find globals/statics) path user/workspace setting for a particular launch configuration. This should be the full pathname to the executable (or name of the executable if it is in your PATH). Note that other toolchain executables with the configured prefix must still be available. The program 'nm' is also expected alongside",
+                                "type": "string"
+                            },
+                            "nmPath": {
+                                "default": null,
+                                "description": "Optional path to the nm executable. If not set, nm is derived from objdumpPath.",
                                 "type": "string"
                             },
                             "serverArgs": {
@@ -1675,6 +1712,11 @@
                             "objdumpPath": {
                                 "default": null,
                                 "description": "This setting can be used to override the objdump (used to find globals/statics) path user/workspace setting for a particular launch configuration. This should be the full pathname to the executable (or name of the executable if it is in your PATH). Note that other toolchain executables with the configured prefix must still be available. The program 'nm' is also expected alongside",
+                                "type": "string"
+                            },
+                            "nmPath": {
+                                "default": null,
+                                "description": "Optional path to the nm executable. If not set, nm is derived from objdumpPath.",
                                 "type": "string"
                             },
                             "serverArgs": {

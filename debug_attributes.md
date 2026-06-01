@@ -40,6 +40,7 @@ If the type is marked as `{...}` it means that it is a complex item can have mul
 | liveWatch<br>.samplesPerSecond | number | Both | Maximum number of samples per second. Different from GUI refresh-rate, which is a user/workspace setting |
 | loadFiles | string[] | Launch | List of files (hex/bin/elf files) to load/program instead of the executable file. Symbols are not loaded (see `symbolFiles`). Can be an empty list to specify none. If this property does not exist, then the executable is used to program the device |
 | machine | string | Both | Machine Type Selection - used for QEMU server type |
+| nmPath | string | Both | Optional path to the nm executable. If not set, nm is derived from objdumpPath. |
 | numberOfProcessors | number | Both | Number of processors/cores in the target device. |
 | objdumpPath | string | Both | This setting can be used to override the objdump (used to find globals/statics) path user/workspace setting for a particular launch configuration. This should be the full pathname to the executable (or name of the executable if it is in your PATH). Note that other toolchain executables with the configured prefix must still be available. The program 'nm' is also expected alongside |
 | overrideAttachCommands | string[] | Attach | Override the commands that are normally executed as part of attaching to a running target. In most cases it is preferable to use preAttachCommands and postAttachCommands to customize the GDB attach sequence. |

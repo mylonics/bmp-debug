@@ -1052,11 +1052,14 @@ export class GDBDebugSession extends LoggingDebugSession {
 
             const pythonDir = path.dirname(this.args.pythonPath);
             const pathSep = (os.platform() === 'win32') ? ';' : ':';
-            env.PATH = env.PATH ? `${pythonDir}${pathSep}${env.PATH}` : pythonDir;
-
             if (!this.args.pythonHome) {
                 env.PYTHONHOME = this.inferPythonHomeFromExecutable(this.args.pythonPath);
             }
+            // On Windows, GDB-py links against pythonXX.dll in the base Python install, not the
+            // venv. pyvenv.cfg records that base dir; prepend it first so the DLL is found.
+            const pyvenvBase = this.readPyvenvCfgHome(this.args.pythonPath);
+            const extraPaths = pyvenvBase ? [pyvenvBase, pythonDir] : [pythonDir];
+            env.PATH = env.PATH ? `${extraPaths.join(pathSep)}${pathSep}${env.PATH}` : extraPaths.join(pathSep);
         }
 
         if (this.args.pythonHome) {
@@ -1064,6 +1067,27 @@ export class GDBDebugSession extends LoggingDebugSession {
         }
 
         return env;
+    }
+
+    // When pythonPath points to a venv interpreter, the actual pythonXX.dll lives in the base
+    // installation, not in the venv. pyvenv.cfg records the base installation's directory.
+    private readPyvenvCfgHome(pythonPath: string): string | null {
+        try {
+            const pythonDir = path.dirname(pythonPath);
+            const pythonDirBase = path.basename(pythonDir).toLowerCase();
+            // venv layout: <venv>/Scripts/python.exe (Windows) or <venv>/bin/python (posix)
+            const venvRoot = ((pythonDirBase === 'scripts') || (pythonDirBase === 'bin'))
+                ? path.dirname(pythonDir) : pythonDir;
+            const cfgPath = path.join(venvRoot, 'pyvenv.cfg');
+            if (fs.existsSync(cfgPath)) {
+                const content = fs.readFileSync(cfgPath, 'utf8');
+                const match = content.match(/^home\s*=\s*(.+)$/m);
+                if (match) {
+                    return match[1].trim();
+                }
+            }
+        } catch { /* non-fatal */ }
+        return null;
     }
 
     private gdbInitCommands: string[] = [];

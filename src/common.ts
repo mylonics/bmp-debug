@@ -276,6 +276,7 @@ export interface ConfigurationArguments extends DebugProtocol.LaunchRequestArgum
     pythonPath: string;
     pythonHome: string;
     objdumpPath: string;
+    nmPath: string;
     serverArgs: string[];
     serverCwd: string;
     device: string;
