@@ -92,15 +92,48 @@ The RTT terminal is bidirectional — you can both view output and send input. I
 }
 ```
 
-### Specifying the GDB Executable
+### Specifying the GDB Executable and Python Runtime
 
-The extension needs `arm-none-eabi-gdb` (with Python support) to communicate with the Black Magic Probe. There are several ways to configure which GDB binary is used, listed in order of precedence:
+The extension needs a GDB binary with Python support to communicate with the Black Magic Probe and enable RTOS thread awareness. You typically need to configure both the GDB path and the Python runtime together.
+
+#### Selecting the GDB binary
+
+The GDB binary is resolved in this order of precedence:
 
 1. **`gdbPath` in launch.json** — overrides everything for that launch configuration. Can be a full path or just the executable name if it is on your `PATH`.
 2. **`armToolchainPath` in launch.json** — sets the directory containing the toolchain binaries. The extension appends `arm-none-eabi-gdb` (or the configured prefix) automatically.
 3. **VS Code settings** — the `bmp-debug.gdbPath` or `bmp-debug.armToolchainPath` settings apply globally (with per-platform variants `.linux`, `.osx`, `.windows`).
 4. **System PATH** — if none of the above are set, the extension looks for `arm-none-eabi-gdb` on your system `PATH`.
 
+#### Configuring the Python runtime
+
+GDB builds with Python support (`gdb-py`) need to locate the correct Python runtime at startup. On Windows in particular, `pythonXX.dll` must be on `PATH` or the GDB process will fail immediately with exit code `0xC0000135` (DLL not found).
+
+Set `pythonPath` to the Python interpreter GDB should use (e.g. one from a virtual environment). The extension automatically:
+
+1. Sets `PYTHONEXECUTABLE` to the given interpreter.
+2. Prepends the interpreter's directory to `PATH` so the runtime is findable.
+3. If the interpreter is inside a **venv**, reads `pyvenv.cfg` to locate the base Python installation and prepends that too — this is where `pythonXX.dll` actually lives on Windows.
+4. Sets `PYTHONHOME` to the venv root so `site-packages` resolves from the venv.
+
+Set `pythonHome` explicitly only if you need to override the automatic `PYTHONHOME` detection.
+
+#### Example: GDB-py with a venv Python (Windows)
+
+```json
+{
+    "name": "Debug with BMP",
+    "cwd": "${workspaceFolder}",
+    "executable": "./build/zephyr/zephyr.elf",
+    "request": "launch",
+    "type": "bmp-debug",
+    "interface": "swd",
+    "runToEntryPoint": "main",
+    "rtos": "zephyr",
+    "gdbPath": "C:/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py.exe",
+    "pythonPath": "C:/myproject/.venv/Scripts/python.exe"
+}
+```
 
 #### Example: Using `armToolchainPath` in launch.json
 
@@ -125,9 +158,21 @@ In your `.vscode/settings.json` or user settings:
 
 ```json
 {
-    "bmp-debug.gdbPath": "/opt/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+    "bmp-debug.gdbPath": "/opt/zephyr-sdk-0.17.0/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+    "bmp-debug.pythonPath.linux": "/opt/myproject/.venv/bin/python"
 }
 ```
+
+#### GDB and Python properties
+
+| Property | Description |
+|---|---|
+| `gdbPath` | Full path or name of the GDB executable. Overrides `armToolchainPath`. |
+| `armToolchainPath` | Directory containing the ARM toolchain binaries. |
+| `pythonPath` | Path to the Python interpreter GDB should use. Accepts a venv interpreter; the base install is found automatically via `pyvenv.cfg` (important on Windows). |
+| `pythonHome` | Explicitly sets `PYTHONHOME` for GDB. Rarely needed — omit unless `pythonPath` alone does not work. |
+
+All properties support per-platform VS Code setting variants: `.linux`, `.osx`, `.windows`.
 
 
 ### Getting a Compatible GDB for python based RTOS thread awareness

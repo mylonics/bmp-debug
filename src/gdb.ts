@@ -1077,7 +1077,8 @@ export class GDBDebugSession extends LoggingDebugSession {
             const pythonDirBase = path.basename(pythonDir).toLowerCase();
             // venv layout: <venv>/Scripts/python.exe (Windows) or <venv>/bin/python (posix)
             const venvRoot = ((pythonDirBase === 'scripts') || (pythonDirBase === 'bin'))
-                ? path.dirname(pythonDir) : pythonDir;
+                ? path.dirname(pythonDir)
+                : pythonDir;
             const cfgPath = path.join(venvRoot, 'pyvenv.cfg');
             if (fs.existsSync(cfgPath)) {
                 const content = fs.readFileSync(cfgPath, 'utf8');
