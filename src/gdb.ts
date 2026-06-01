@@ -1052,14 +1052,46 @@ export class GDBDebugSession extends LoggingDebugSession {
 
             const pythonDir = path.dirname(this.args.pythonPath);
             const pathSep = (os.platform() === 'win32') ? ';' : ':';
-            if (!this.args.pythonHome) {
-                env.PYTHONHOME = this.inferPythonHomeFromExecutable(this.args.pythonPath);
-            }
-            // On Windows, GDB-py links against pythonXX.dll in the base Python install, not the
-            // venv. pyvenv.cfg records that base dir; prepend it first so the DLL is found.
+
+            // Read pyvenv.cfg to find the base Python install.
+            // On Windows: 'home' is the install root (same dir as python.exe).
+            // On POSIX:   'home' is the bin dir inside the install root (e.g. /usr/bin).
             const pyvenvBase = this.readPyvenvCfgHome(this.args.pythonPath);
-            const extraPaths = pyvenvBase ? [pyvenvBase, pythonDir] : [pythonDir];
-            env.PATH = env.PATH ? `${extraPaths.join(pathSep)}${pathSep}${env.PATH}` : extraPaths.join(pathSep);
+
+            // Prepend base Python dir (DLL lives there on Windows) then venv Scripts/bin.
+            const extraPaths = pyvenvBase
+                ? [pyvenvBase, pythonDir]
+                : [pythonDir];
+            env.PATH = env.PATH
+                ? `${extraPaths.join(pathSep)}${pathSep}${env.PATH}`
+                : extraPaths.join(pathSep);
+
+            if (!this.args.pythonHome) {
+                if (pyvenvBase) {
+                    // PYTHONHOME must point to the base Python installation, NOT the venv root.
+                    // Setting it to the venv root causes GDB-py to fail with
+                    // "failed to get the Python codec of the filesystem encoding" because
+                    // the venv lacks a complete stdlib (e.g. python312.zip).
+                    // On POSIX, pyvenvBase is the 'bin' dir — go up one level to the install root.
+                    const pyvenvBaseName = path.basename(pyvenvBase).toLowerCase();
+                    env.PYTHONHOME = (pyvenvBaseName === 'bin')
+                        ? path.dirname(pyvenvBase)
+                        : pyvenvBase;
+                    // Make venv's site-packages visible so pip-installed packages still work.
+                    const pythonDirBase = path.basename(pythonDir).toLowerCase();
+                    const venvRoot = ((pythonDirBase === 'scripts') || (pythonDirBase === 'bin'))
+                        ? path.dirname(pythonDir)
+                        : pythonDir;
+                    const sitePkgs = this.findVenvSitePackages(venvRoot);
+                    if (sitePkgs) {
+                        env.PYTHONPATH = env.PYTHONPATH
+                            ? `${sitePkgs}${pathSep}${env.PYTHONPATH}`
+                            : sitePkgs;
+                    }
+                } else {
+                    env.PYTHONHOME = this.inferPythonHomeFromExecutable(this.args.pythonPath);
+                }
+            }
         }
 
         if (this.args.pythonHome) {
@@ -1085,6 +1117,29 @@ export class GDBDebugSession extends LoggingDebugSession {
                 const match = content.match(/^home\s*=\s*(.+)$/m);
                 if (match) {
                     return match[1].trim();
+                }
+            }
+        } catch { /* non-fatal */ }
+        return null;
+    }
+
+    // Returns the venv's site-packages directory, or null if not found.
+    private findVenvSitePackages(venvRoot: string): string | null {
+        try {
+            if (os.platform() === 'win32') {
+                const p = path.join(venvRoot, 'Lib', 'site-packages');
+                return fs.existsSync(p) ? p : null;
+            } else {
+                const libDir = path.join(venvRoot, 'lib');
+                if (fs.existsSync(libDir)) {
+                    for (const entry of fs.readdirSync(libDir)) {
+                        if (/^python\d/.test(entry)) {
+                            const p = path.join(libDir, entry, 'site-packages');
+                            if (fs.existsSync(p)) {
+                                return p;
+                            }
+                        }
+                    }
                 }
             }
         } catch { /* non-fatal */ }
